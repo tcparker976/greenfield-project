@@ -1,13 +1,13 @@
 # Project Name
 
-> Pithy project description
+> Chattermon: Gotta Chat'em All
 
 ## Team
 
-  - teamMember
-  - teamMember
-  - teamMember
-  - teamMember
+  - James Terry
+  - Chris Messer
+  - David Kumarbai
+  - Thomas Parker
 
 ## Table of Contents
 
