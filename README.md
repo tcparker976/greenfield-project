@@ -1,6 +1,4 @@
-# Project Name
-
-> Chattermon: Gotta Chat'em All
+# Chattermon: Gotta Chat'em All
 
 ## Team
 
@@ -23,6 +21,16 @@
 
 > Some usage instructions
 
+1. Clone the repo from greenfield-jupiter/greenfield-project on github.
+  ```sh
+    git clone https://github.com/greenfield-jupiter/greenfield-project.git
+  ```
+2. Move into the repo after its been cloned onto your machine by typing the following command.
+  ```sh
+    cd greenfield-project/
+  ```
+3. Follow the instructions in the 'Installing Dependencies' section.
+
 ## Requirements
 
 - Node 6.4.x
@@ -41,11 +49,13 @@ From within the root directory:
 npm install -g bower
 npm install
 bower install
+npm start
+npm start-dev
 ```
 
 ### Roadmap
 
-View the project roadmap [here](LINK_TO_DOC)
+View the project roadmap [here](https://docs.google.com/document/d/1cdVM25fZtM5FbvYwwBRCHvTYupI5Z7EcVNIZzA4A5s8/edit)
 
 
 ## Contributing
