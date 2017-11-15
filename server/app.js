@@ -23,8 +23,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 io.on('connection', (socket) => {
-  console.log('Thomas - you\'re not cool');
+  console.log('Connection Established');
   // console.log('Socket:', socket);
+  socket.on('chat message', (message) => {
+    console.log('Message posted:', message);
+    io.emit('chat message', message);
+  });
 });
 
 // app.listen(process.env.PORT || 3000)
