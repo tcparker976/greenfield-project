@@ -1,7 +1,8 @@
 const express = require('express');
 const path = require('path');
-
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 const dist = path.join(__dirname, '/../client/dist');
 
@@ -21,5 +22,15 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
-app.listen(process.env.PORT || 3000)
-console.log('listening on port ' + (process.env.PORT || 3000));
+io.on('connection', (socket) => {
+  console.log('Thomas - you\'re not cool');
+  // console.log('Socket:', socket);
+});
+
+// app.listen(process.env.PORT || 3000)
+// console.log('listening on port ' + (process.env.PORT || 3000));
+
+var port = process.env.PORT || 3000;
+http.listen(port, function(){
+  console.log('listening on *:' + port);
+});
