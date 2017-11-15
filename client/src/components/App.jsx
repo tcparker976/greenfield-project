@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import { Switch, Route } from 'react-router-dom';
+
+import Home from './Home.jsx';
+import Game from './Game.jsx';
 import io from 'socket.io-client';
 
 export default class App extends Component {
@@ -10,6 +14,16 @@ export default class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    var socket = io();
+    socket.on('chat message', (message) => {
+      this.setState({
+        messageArray: this.state.messageArray.concat(message) // antipattern
+      })
+      console.log('Message Array:', this.state.messageArray);
+    })
   }
 
   handleChange(e) {
@@ -31,19 +45,11 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <h1>Hello Pokémon change</h1>
-        <input type='text' onChange={this.handleChange} value={this.state.text} onKeyDown={this.handleSubmit}/>
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route path='/game' component={Game} />
+        </Switch>
       </div>
     )
-  }
-
-  componentDidMount() {
-    var socket = io();
-    socket.on('chat message', (message) => {
-      this.setState({
-        messageArray: this.state.messageArray.concat(message) // antipattern
-      })
-      console.log('Message Array:', this.state.messageArray);
-    })
   }
 }
