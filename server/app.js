@@ -8,6 +8,7 @@ const dist = path.join(__dirname, '/../client/dist');
 
 app.use(express.static(dist));
 
+
 if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
   const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -31,6 +32,11 @@ io.on('connection', (socket) => {
   });
 });
 
+
+// a catch-all route for BrowserRouter - enables direct linking to this point. 
+app.get('/*', (req, res) => {
+  res.sendFile(dist + '/index.html');
+});
 // app.listen(process.env.PORT || 3000)
 // console.log('listening on port ' + (process.env.PORT || 3000));
 
