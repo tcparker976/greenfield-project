@@ -8,6 +8,8 @@ const dist = path.join(__dirname, '/../client/dist');
 
 app.use(express.static(dist));
 
+const games = []
+
 
 if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
@@ -23,13 +25,31 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
+
+// TODO - setup this flow 
+
+// app.post('/create', (req, res) => {
+//   // creates entry in database for new game
+//   // -- then, grabs that games ID 
+//   // -- then, use that game id, to generate a new socket connection
+//   // -- at the same time, send that game id down to the client, to click as a link 
+// })
+
 io.on('connection', (socket) => {
-  console.log('Connection Established');
+
+  // var nsp = io.of('/my-namespace');
+  // nsp.on('connection', function(socket){
+  //   console.log('someone connected');
+  // });
+  // nsp.emit('hi', 'everyone!');
   // console.log('Socket:', socket);
-  socket.on('chat message', (message) => {
-    console.log('Message posted:', message);
-    io.emit('chat message', message);
+  socket.on('newgame', (gameid) => {
+    socket.join(gameid); 
   });
+  socket.on('chat message', (obj) => {
+    io.to(obj.id).emit('chat message', obj.text)
+  });
+
 });
 
 
