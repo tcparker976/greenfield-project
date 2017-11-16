@@ -33,7 +33,7 @@ io.on('connection', (socket) => {
 });
 
 
-// a catch-all route for BrowserRouter - enables direct linking to this point. 
+// a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, res) => {
   res.sendFile(dist + '/index.html');
 });
@@ -44,3 +44,5 @@ var port = process.env.PORT || 3000;
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+
+module.exports = app;
