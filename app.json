@@ -6,7 +6,7 @@
     "test": {
       "scripts": {
         "test-setup": "npm install supertest mocha chai",
-        "test": "mocha test"
+        "test": "mocha test --exit"
       }
     }
   },

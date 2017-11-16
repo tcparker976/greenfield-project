@@ -13,7 +13,7 @@
     "start-dev": "nodemon server/app.js",
     "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --colors",
     "postinstall": "npm run build",
-    "test": "mocha test"
+    "test": "mocha test --exit"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -40,7 +40,7 @@
     "react-hot-loader": "^3.1.2",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
-    "supertest": "^3.0.0"    
+    "supertest": "^3.0.0"
   },
   "babel": {
     "presets": [
