@@ -12,7 +12,8 @@
     "start": "node server/app.js",
     "start-dev": "nodemon server/app.js",
     "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --colors",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "test": "mocha test"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -36,7 +37,10 @@
   "devDependencies": {
     "eslint-config-hackreactor": "git://github.com/reactorcore/eslint-config-hackreactor.git",
     "nodemon": "^1.12.1",
-    "react-hot-loader": "^3.1.2"
+    "react-hot-loader": "^3.1.2",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "supertest": "^3.0.0"    
   },
   "babel": {
     "presets": [
