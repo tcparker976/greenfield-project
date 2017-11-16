@@ -18,7 +18,8 @@ pokemon = {
   initHealth: Number, // initial health for Pokemon, is constant
   currHealth: Number, // tracking based on damage Pokémon has taken
   baseAttack: Number // attack number
-  afflictedBy: String || null // future proofing for when pokemon has been frozen, poisoned, etc.
+  afflictedBy: String || null, // future proofing for when pokemon has been frozen, poisoned, etc.
+  defense: Number
 }
 
 move = {
