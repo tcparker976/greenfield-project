@@ -71,13 +71,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('attack', (data) => {
-    console.log(data.pokemon.name + ' has attacked!');
     // find game to alter (gameid)
     const game = games[data.gameid];
     const player = game.playerTurn;
     const attackPower = game[player].pokemon.attack;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
-    console.log(game);
     game[opponent].pokemon.health -= attackPower; 
     if (game[opponent].pokemon.health <= 0) {
       io.to(data.gameid).emit('gameover', { name: game[player].name });

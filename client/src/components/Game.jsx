@@ -14,6 +14,7 @@ export default class Game extends Component {
       name: null,
       pokemon: {
         name: 'pikachu',
+        initialHealth: 80,
         health: 80,
         attack: 24
       },      
@@ -125,10 +126,8 @@ export default class Game extends Component {
   handleCommands(e) {
     if (e.keyCode === 13) {
       if (!this.state.isActive) {
-        console.log('it is not your turn!')
+        alert('it is not your turn!')
       } else {
-        console.log('Your pokemon: ', this.state.pokemon);
-        console.log('Opponent pokemon ', this.state.opponent.pokemon);
         if (e.target.value === 'attack') {
           this.state.socket.emit('attack', {
             gameid: this.props.match.params.gameid,
@@ -136,7 +135,7 @@ export default class Game extends Component {
             pokemon: this.state.pokemon
           })
         } else {
-          console.log('invalid input!')
+          alert('invalid input!')
         }
         this.setState({
           command: ''
@@ -151,6 +150,27 @@ export default class Game extends Component {
     });
   }
 
+  renderGame() {
+    if (!this.state.opponent) {
+      return (
+        <div>
+          <h1>Awaiting opponent...</h1>
+        </div>
+      )
+    } else {
+      const { name, initialHealth, health } = this.state.pokemon;
+      const { opponent } = this.state; 
+      return (
+        <div>
+          <h1>Your pokemon</h1>
+          <h4>{name}: {health}/{initialHealth} </h4>
+          <h1 style={{marginTop: '50px'}}>{opponent.name}'s pokemon</h1>
+          <h4>{opponent.pokemon.name}: {opponent.pokemon.health}/{opponent.pokemon.initialHealth} </h4>
+        </div>
+      )
+    }
+  }
+
 
   render() {
     const { players, spectators, gameOver } = this.state; 
@@ -160,6 +180,7 @@ export default class Game extends Component {
         <input type="text" value={this.state.text} onKeyDown={this.handleSubmit} onChange={this.handleChange} />
         <h2>Terminal Command Bar</h2>
         <input type="text" value={this.state.command} onKeyDown={this.handleCommands} onChange={this.handleCommandChange} />
+        {this.renderGame()}
       </div>
     )
   }
