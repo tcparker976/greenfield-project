@@ -13,13 +13,16 @@ player1 = {
 
 pokemon = {
   moves: [move, move, move, move] // array of four move objects, defined below
+  types: Array //an array of this pokemon's types, min one, max two
   name: String, // name of Pokemon,
-  level: Number || 25, // assume Pokemon is level 25
+  // level: Number || 25, // assume Pokemon is level 25 ---> all logic has level 25 hardcoded
   initHealth: Number, // initial health for Pokemon, is constant
   currHealth: Number, // tracking based on damage Pokémon has taken
-  baseAttack: Number // attack number
+  attack: Number // attack number
+  specialAttack: Number // extra complexity after MVP
+  specialDefense: Number //  extra complexity after MVP
   afflictedBy: String || null, // future proofing for when pokemon has been frozen, poisoned, etc.
-  defense: Number
+  defense: Number // defense number
 }
 
 move = {
