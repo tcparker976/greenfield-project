@@ -1,0 +1,54 @@
+body {
+  height: 100%;
+}
+
+.game-page-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 20px;
+}
+
+.game-container {
+  border: solid red;
+}
+
+.chat-container {
+  padding: 10px;
+  background-color: #f0f0f0;
+  font-family: 'Roboto Mono', monospace;
+  height: 90vh;
+  position: relative;
+}
+
+.message-container {
+  height: calc(100% - 40px);
+  position: relative;
+  overflow-y: scroll;
+}
+
+.message-instance {
+  padding: 5px 0;
+}
+
+.message-username {
+  font-weight: 300;
+  font-size: 0.75rem;
+}
+
+.message-content {
+  font-size: 0.875rem;
+}
+
+.message-input-container {
+  position: absolute;
+  padding: inherit;
+  bottom: -30px;
+  width: 100%;
+  padding-top: 15px;
+}
+
+.message-input {
+  height: 30px;
+  font-size: 0.875rem;
+  width: 100%;
+}
