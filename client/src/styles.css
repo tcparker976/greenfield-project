@@ -22,14 +22,14 @@ body {
 }
 
 .messageContainer {
-  padding: 0 10px;
-  height: calc(100% - 40px);
+  padding: 0 10px 10px;
+  height: calc(100% - 50px);
   position: relative;
   overflow-y: scroll;
 }
 
 .messageInstance {
-  padding: 5px 0;
+  padding: 7px 0;
 }
 
 .messageUsername {
@@ -44,14 +44,16 @@ body {
 .messageInputContainer {
   position: absolute;
   padding: inherit;
-  bottom: -30px;
+  bottom: -40px;
   width: 100%;
   padding-top: 15px;
 }
 
 .messageInput {
-  height: 30px;
+  padding: 0 5px;
+  height: 40px;
   font-size: 0.875rem;
   width: 100%;
   box-sizing: border-box;
+  outline: none;
 }
