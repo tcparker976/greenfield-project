@@ -11,115 +11,115 @@ export default class Chat extends Component {
       messages: [
         {
           user: 'Marshall',
-          content: 'Whats up James'
+          text: 'Whats up James'
         },
         {
           user: 'James',
-          content: 'Yo Stouf'
+          text: 'Yo Stouf'
         },
         {
           user: 'Marshall',
-          content: 'I couldnt make it to the warthog'
+          text: 'I couldnt make it to the warthog'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         },
         {
           user: 'James',
-          content: 'God bless it!'
+          text: 'God bless it!'
         }
       ]
     };
@@ -134,7 +134,7 @@ export default class Chat extends Component {
       this.setState({
         messages:this.state.messages.concat({
           user: 'Earl',
-          content: this.state.messageInput
+          text: this.state.messageInput
         }),
         messageInput: ''
       });
@@ -145,11 +145,11 @@ export default class Chat extends Component {
     return (
       <div className={css.chatContainer}>
         <div className={css.messageContainer}>
-          {this.state.messages.map(message => {
+          {this.props.messageArray.map(message => {
             return (
               <div className={css.messageInstance}>
-                <div className={css.messageUsername}>{message.user}</div>
-                <div className={css.messageContent}>{message.content}</div>
+                <div className={css.messageUsername}>{message.name}</div>
+                <div className={css.messageText}>{message.text}</div>
               </div>
             );
           })}

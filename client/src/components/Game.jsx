@@ -60,11 +60,14 @@ export default class Game extends Component {
       // alert(message);
     })
     socket.on('chat message', (message) => {
-      console.log(message);
-      console.log('name', name);
+      var messageInstance = {
+        name: message.name,
+        text: message.text
+      }
+      console.log(messageInstance);
       this.setState(prevState => {
         return {
-          messageArray: prevState.messageArray.concat(message)
+          messageArray: prevState.messageArray.concat(messageInstance)
         }
       })
     });
@@ -119,7 +122,7 @@ export default class Game extends Component {
   handleSubmit(e) {
     if (e.keyCode === 13) {
       var socket = io();
-      this.state.socket.emit('chat message', {id: this.props.match.params.gameid, text: e.target.value});
+      this.state.socket.emit('chat message', {id: this.props.match.params.gameid, name: this.state.name, text: e.target.value});
       this.setState({
         text: ''
       });
@@ -186,7 +189,7 @@ export default class Game extends Component {
           <input type="text" value={this.state.command} onKeyDown={this.handleCommands} onChange={this.handleCommandChange} />
           {this.renderGame()}
         </div>
-        <Chat></Chat>
+        <Chat messageArray={this.state.messageArray}></Chat>
       </div>
     )
   }

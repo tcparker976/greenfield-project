@@ -69,7 +69,8 @@ io.on('connection', (socket) => {
     })
 
   socket.on('chat message', (data) => {
-    io.to(data.id).emit('chat message', data.text)
+    console.log('chat data:', data);
+    io.to(data.id).emit('chat message', data)
   });
 
   socket.on('attack', (data) => {
