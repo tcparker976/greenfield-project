@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /*
-=== GAME STATE === 
+=== GAME STATE ===
 
 uniquegame1: {
   player1: {} --- { name, pokemon: { name, attack, health }}
@@ -35,14 +35,14 @@ uniquegame1: {
   playerTurn: player1 || player2
 }
 
-*/ 
+*/
 
-const games = {}; 
+const games = {};
 
 const createPlayer = (player) => {
   return {
     name: player.name,
-    pokemon: player.pokemon 
+    pokemon: player.pokemon
   }
 }
 
@@ -51,18 +51,18 @@ io.on('connection', (socket) => {
 
   // on join game, initialize game in games object if it does not exist
   socket.on('join game', (data) => {
-    socket.join(data.gameid); 
+    socket.join(data.gameid);
     if (!(data.gameid in games)) {
       games[data.gameid] = {
         player1: createPlayer(data),
         player2: null,
         playerTurn: 'player1'
         }
-        io.to(socket.id).emit('player', 'player1'); 
+        io.to(socket.id).emit('player', 'player1');
       } else if (data.gameid in games && !games[data.gameid].player2) {
         games[data.gameid].player2 = createPlayer(data);
         io.to(socket.id).emit('player', 'player2');
-        io.to(data.gameid).emit('ready', games[data.gameid]); 
+        io.to(data.gameid).emit('ready', games[data.gameid]);
       } else {
         io.to(socket.id).emit('gamefull', 'this game is full!');
       }
@@ -78,12 +78,12 @@ io.on('connection', (socket) => {
     const player = game.playerTurn;
     const attackPower = game[player].pokemon.attack;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
-    game[opponent].pokemon.health -= attackPower; 
+    game[opponent].pokemon.health -= attackPower;
     if (game[opponent].pokemon.health <= 0) {
       io.to(data.gameid).emit('gameover', { name: game[player].name });
     } else {
-      game.playerTurn = opponent; 
-      io.to(data.gameid).emit('turn move', games[data.gameid]); 
+      game.playerTurn = opponent;
+      io.to(data.gameid).emit('turn move', games[data.gameid]);
     }
   })
 

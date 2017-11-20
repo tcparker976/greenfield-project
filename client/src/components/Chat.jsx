@@ -23,6 +23,102 @@ export default class Chat extends Component {
         {
           user: 'James',
           content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
+        },
+        {
+          user: 'James',
+          content: 'God bless it!'
         }
       ]
     };

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Chat from './Chat.jsx';
 import PlayerContainer from './PlayerContainer.jsx';
+// import '../styles.css';
 
 export default class Game extends Component {
   constructor(props) {
@@ -55,10 +56,12 @@ export default class Game extends Component {
     }
     socket.emit('join game', playerInitializer);
     socket.on('gamefull', (message) => {
-      alert(message);
+      console.log(message);
+      // alert(message);
     })
     socket.on('chat message', (message) => {
       console.log(message);
+      console.log('name', name);
       this.setState(prevState => {
         return {
           messageArray: prevState.messageArray.concat(message)
