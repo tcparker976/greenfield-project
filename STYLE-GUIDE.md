@@ -24,7 +24,6 @@ When writing any block of code that is logically subordinate to the line immedia
         if(condition){
           action();
         }
-
         // bad:
         if(condition){
           action();
@@ -91,7 +90,6 @@ When writing any block of code that is logically subordinate to the line immedia
   for(var i = 0; i < list.length; i++){
     alert(list[i]);
   }
-
   // bad:
   var list = ['a', 'b', 'c']
   for(var i in list){
@@ -105,7 +103,6 @@ When writing any block of code that is logically subordinate to the line immedia
     for(key in object){
       alert(key);
     }
-
     // bad:
     for(key in object)
       alert(key);
@@ -147,7 +144,6 @@ When writing any block of code that is logically subordinate to the line immedia
   ```javascript
   // good:
   alert('hi');
-
   // bad:
   alert('hi')
   ```
@@ -160,7 +156,6 @@ When writing any block of code that is logically subordinate to the line immedia
   if(condition){
     response();
   }
-
   // bad:
   if(condition){
     response();
@@ -174,7 +169,6 @@ When writing any block of code that is logically subordinate to the line immedia
   var greet = function(){
     alert('hi');
   };
-
   // bad:
   var greet = function(){
     alert('hi');
@@ -225,7 +219,6 @@ When writing any block of code that is logically subordinate to the line immedia
     }else{
       otherResponse();
     }
-
     // bad:
     if(condition){
       response();

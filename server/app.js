@@ -3,6 +3,8 @@ const path = require('path');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const PokeApi = require('pokeapi');
+const api = PokeApi.v1();
 
 const dist = path.join(__dirname, '/../client/dist');
 
@@ -88,10 +90,23 @@ io.on('connection', (socket) => {
 });
 
 
-// a catch-all route for BrowserRouter - enables direct linking. 
+// a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, res) => {
   res.sendFile(dist + '/index.html');
 });
+
+
+// The following is an example case of using the pokeapi module
+// REF: https://www.npmjs.com/package/pokeapi
+
+// api.get('pokemon', 1).then(function(bulbasaur) {
+//     console.log("Here's Bulbasaur:", bulbasaur);
+//   api.get(bulbasaur.moves).then(function(moves) {
+//       console.log("Full move list:" + moves);
+//     })
+// }, function(err) {
+//     console.log('ERROR', err);
+// });
 
 
 var port = process.env.PORT || 3000;
