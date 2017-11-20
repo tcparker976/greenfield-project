@@ -24,102 +24,6 @@ export default class Chat extends Component {
         {
           user: 'James',
           text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
-        },
-        {
-          user: 'James',
-          text: 'God bless it!'
         }
       ]
     };
@@ -158,7 +62,8 @@ export default class Chat extends Component {
           <div className={css.messageInputContainer}>
             {/* for future styling:
               https://alistapart.com/article/expanding-text-areas-made-elegant */}
-            <input type="text" className={css.messageInput} value={this.state.messageInput} onChange={this.handleChange.bind(this)} onKeyDown={this.handleNewMessage.bind(this)}/>
+            {/* <input type="text" className={css.messageInput} value={this.state.messageInput} onChange={this.handleChange.bind(this)} onKeyDown={this.handleNewMessage.bind(this)}/> */}
+            <input type="text" className={css.messageInput} value={this.props.chatInput} onKeyDown={this.props.handleChatInputSubmit} onChange={this.props.handleChatInputChange}/>
           </div>
         </div>
       </div>

@@ -22,13 +22,13 @@ export default class Game extends Component {
       opponent: null,
       isActive: null,
       gameOver: false,
-      text: '',
+      chatInput: '',
       command: '',
       socket: null,
     }
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChatInputChange = this.handleChatInputChange.bind(this);
+    this.handleChatInputSubmit = this.handleChatInputSubmit.bind(this);
     this.handleCommandChange = this.handleCommandChange.bind(this);
     this.handleCommands = this.handleCommands.bind(this);
   }
@@ -43,7 +43,20 @@ export default class Game extends Component {
 
       return text;
     }
-    const name = makeid();
+
+    // it's just a little more readable during testing
+    function makeHumanId() {
+      var text = "";
+      var names = ['chris-', 'david-', 'james-', 'thomas-', 'anthony-', 'fred-']
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 3; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      return names[Math.floor(Math.random() * names.length)] + text;
+    }
+
+    const name = makeHumanId();
     var socket = io();
     this.setState({
       name,
@@ -113,18 +126,18 @@ export default class Game extends Component {
     })
   }
 
-  handleChange(e) {
+  handleChatInputChange(e) {
     this.setState({
-      text: e.target.value
+      chatInput: e.target.value
     });
   }
 
-  handleSubmit(e) {
+  handleChatInputSubmit(e) {
     if (e.keyCode === 13) {
       var socket = io();
       this.state.socket.emit('chat message', {id: this.props.match.params.gameid, name: this.state.name, text: e.target.value});
       this.setState({
-        text: ''
+        chatInput: ''
       });
     }
   }
@@ -184,12 +197,11 @@ export default class Game extends Component {
       <div className={css.gamePageContainer}>
         <div className={css.gameContainer}>
           <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
-          <input type="text" value={this.state.text} onKeyDown={this.handleSubmit} onChange={this.handleChange} />
           <h2>Terminal Command Bar</h2>
           <input type="text" value={this.state.command} onKeyDown={this.handleCommands} onChange={this.handleCommandChange} />
           {this.renderGame()}
         </div>
-        <Chat messageArray={this.state.messageArray}></Chat>
+        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange}></Chat>
       </div>
     )
   }
