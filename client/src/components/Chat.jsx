@@ -5,17 +5,10 @@ export default class Chat extends Component {
   constructor(props) {
     super(props);
 
-    //temporary state for populating dummy message
     this.state = {
-      shouldScroll: true
+      shouldScroll: true,
+      showNewMessageBanner: false
     };
-  }
-
-  componentDidMount() {
-    // let messageContainer = document.getElementsByClassName(css.messageContainer)[0];
-    // console.log(messageContainer);
-    // console.log(messageContainer.scrollHeight);
-    // messageContainer.scrollTop = messageContainer.scrollHeight;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -24,28 +17,39 @@ export default class Chat extends Component {
       if (messageContainer.clientHeight + messageContainer.scrollTop === messageContainer.scrollHeight) {
         console.log('User is scrolled to the bottom of messages, so do autoscroll');
         this.setState({
-          shouldScroll: true
+          shouldScroll: true,
+          showNewMessageBanner: false
         });
       } else {
         console.log('User is reading old messages above the scroll, so do NOT autoscroll');
         this.setState({
-          shouldScroll: false
+          shouldScroll: false,
+          showNewMessageBanner: true
         });
+        setTimeout(function() {
+          this.setState({showNewMessageBanner: false});
+        }.bind(this), 2000);
       }
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // check to see if there are new messages incoming
+      // if there are new messages, and the user is at the bottom of the message log scroll
+        // then scroll down to show the message
     if (prevProps.messageArray.length !== this.props.messageArray.length) {
       let messageContainer = document.getElementsByClassName(css.messageContainer)[0];
-      // console.log('New Message');
-      // console.log('SH:', messageContainer.scrollHeight);
-      // console.log('ST:', messageContainer.scrollTop);
-      // console.log('CH:', messageContainer.clientHeight);
-
       if (this.state.shouldScroll) {
         messageContainer.scrollTop = messageContainer.scrollHeight;
       }
+    }
+  }
+
+  handleChatInputSubmit(e) {
+    if (e.keyCode === 13) {
+      let messageContainer = document.getElementsByClassName(css.messageContainer)[0];
+      this.props.handleChatInputSubmit(e);
+      messageContainer.scrollTop = messageContainer.scrollHeight;
     }
   }
 
@@ -65,9 +69,9 @@ export default class Chat extends Component {
         </div>
         <div style={{position:'relative'}}>
           <div className={css.messageInputContainer}>
-            {/* for future styling:
-              https://alistapart.com/article/expanding-text-areas-made-elegant */}
-            <input type="text" className={css.messageInput} value={this.props.chatInput} onKeyDown={this.props.handleChatInputSubmit} onChange={this.props.handleChatInputChange}/>
+            {/* for future styling: https://alistapart.com/article/expanding-text-areas-made-elegant */}
+            <div className={css.newMessageAlertBanner} style={{display: this.state.showNewMessageBanner ? 'block' : 'none' }}>New Message</div>
+            <input type="text" className={css.messageInput} value={this.props.chatInput} onKeyDown={this.handleChatInputSubmit.bind(this)} onChange={this.props.handleChatInputChange}/>
           </div>
         </div>
       </div>

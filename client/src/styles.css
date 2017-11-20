@@ -22,8 +22,8 @@ body {
 }
 
 .messageContainer {
-  padding: 0 10px 10px;
-  height: calc(100% - 50px);
+  padding: 0 10px 20px;
+  height: calc(100% - 60px);
   position: relative;
   overflow-y: scroll;
 }
@@ -46,7 +46,14 @@ body {
   padding: inherit;
   bottom: -40px;
   width: 100%;
-  padding-top: 15px;
+}
+
+.newMessageAlertBanner {
+  background-color: #0288D1;
+  color: white;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 2px 0;
 }
 
 .messageInput {
