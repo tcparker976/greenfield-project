@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Chat from './Chat.jsx';
 import PlayerContainer from './PlayerContainer.jsx';
-// import '../styles.css';
+import css from '../styles.css';
 
 export default class Game extends Component {
   constructor(props) {
@@ -178,8 +178,8 @@ export default class Game extends Component {
   render() {
     const { players, spectators, gameOver } = this.state;
     return (
-      <div className="game-page-container">
-        <div className="game-container">
+      <div className={css.gamePageContainer}>
+        <div className={css.gameContainer}>
           <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
           <input type="text" value={this.state.text} onKeyDown={this.handleSubmit} onChange={this.handleChange} />
           <h2>Terminal Command Bar</h2>

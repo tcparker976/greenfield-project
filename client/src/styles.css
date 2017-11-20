@@ -1,18 +1,18 @@
-/*body {
+body {
   height: 100%;
-}*/
+}
 
-.game-page-container {
+.gamePageContainer {
   display: grid;
   grid-template-columns: 2fr 1fr;
   grid-gap: 20px;
 }
 
-.game-container {
+.gameContainer {
   border: solid red;
 }
 
-.chat-container {
+.chatContainer {
   padding: 10px;
   background-color: #f0f0f0;
   font-family: 'Roboto Mono', monospace;
@@ -20,26 +20,26 @@
   position: relative;
 }
 
-.message-container {
+.messageContainer {
   height: calc(100% - 40px);
   position: relative;
   overflow-y: scroll;
 }
 
-.message-instance {
+.messageInstance {
   padding: 5px 0;
 }
 
-.message-username {
+.messageUsername {
   font-weight: 300;
   font-size: 0.75rem;
 }
 
-.message-content {
+.messageContent {
   font-size: 0.875rem;
 }
 
-.message-input-container {
+.messageInputContainer {
   position: absolute;
   padding: inherit;
   bottom: -30px;
@@ -47,7 +47,7 @@
   padding-top: 15px;
 }
 
-.message-input {
+.messageInput {
   height: 30px;
   font-size: 0.875rem;
   width: 100%;
