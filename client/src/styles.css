@@ -72,7 +72,6 @@ body {
 }
 
 .terminalContainer {
-  position: relative;
   font-family: 'Roboto Mono', monospace;
   height: 150px;
   display: block;
@@ -95,8 +94,6 @@ body {
 
 .commandInput {
   font-family: 'Press Start 2P', cursive;  
-  position: absolute;
-  bottom: 0px;
   border-color: rgb(205, 169, 86);
   border-width: 5px;
   padding: 10px;
@@ -121,6 +118,8 @@ body {
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
 }
+
+
 
 .stats {
   font-family: 'Press Start 2P', cursive;
