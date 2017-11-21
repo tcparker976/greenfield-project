@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-
+import Chat from './Chat.jsx';
 import PlayerContainer from './PlayerContainer.jsx';
+import css from '../styles.css';
 
 export default class Game extends Component {
   constructor(props) {
@@ -17,32 +18,45 @@ export default class Game extends Component {
         initialHealth: 80,
         health: 80,
         attack: 24
-      },      
-      opponent: null, 
+      },
+      opponent: null,
       isActive: null,
       gameOver: false,
-      text: '',
+      chatInput: '',
       command: '',
       socket: null,
     }
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChatInputChange = this.handleChatInputChange.bind(this);
+    this.handleChatInputSubmit = this.handleChatInputSubmit.bind(this);
     this.handleCommandChange = this.handleCommandChange.bind(this);
-    this.handleCommands = this.handleCommands.bind(this);    
+    this.handleCommands = this.handleCommands.bind(this);
   }
 
   componentDidMount() {
     function makeid() {
       var text = "";
       var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    
+
       for (var i = 0; i < 5; i++)
         text += possible.charAt(Math.floor(Math.random() * possible.length));
-    
+
       return text;
     }
-    const name = makeid();
+
+    // it's just a little more readable during testing
+    function makeHumanId() {
+      var text = "";
+      var names = ['chris-', 'david-', 'james-', 'thomas-', 'anthony-', 'fred-']
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 3; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      return names[Math.floor(Math.random() * names.length)] + text;
+    }
+
+    const name = makeHumanId();
     var socket = io();
     this.setState({
       name,
@@ -55,13 +69,18 @@ export default class Game extends Component {
     }
     socket.emit('join game', playerInitializer);
     socket.on('gamefull', (message) => {
-      alert(message); 
+      // console.log(message);
+      alert(message);
     })
     socket.on('chat message', (message) => {
-      console.log(message);
+      var messageInstance = {
+        name: message.name,
+        text: message.text
+      }
+      console.log(messageInstance);
       this.setState(prevState => {
         return {
-          messageArray: prevState.messageArray.concat(message)
+          messageArray: prevState.messageArray.concat(messageInstance)
         }
       })
     });
@@ -83,7 +102,7 @@ export default class Game extends Component {
         })
       }
     });
-    socket.on('turn move', (data) => {    
+    socket.on('turn move', (data) => {
       if (this.state.player1) {
         this.setState(prevState => {
           return {
@@ -101,24 +120,27 @@ export default class Game extends Component {
           }
         })
       }
-    }); 
+    });
     socket.on('gameover', (data) => {
       alert(data.name + ' wins!!');
     })
   }
 
-  handleChange(e) {
-    this.setState({
-      text: e.target.value
-    });
+  handleChatInputChange(e) {
+    // this if statement prevents the chat text area from expanding on submit (keyCode 13)
+    if (e.target.value !== '\n') {
+      this.setState({
+        chatInput: e.target.value
+      });
+    }
   }
 
-  handleSubmit(e) {
+  handleChatInputSubmit(e) {
     if (e.keyCode === 13) {
       var socket = io();
-      this.state.socket.emit('chat message', {id: this.props.match.params.gameid, text: e.target.value});
+      this.state.socket.emit('chat message', {id: this.props.match.params.gameid, name: this.state.name, text: e.target.value});
       this.setState({
-        text: ''
+        chatInput: ''
       });
     }
   }
@@ -159,7 +181,7 @@ export default class Game extends Component {
       )
     } else {
       const { name, initialHealth, health } = this.state.pokemon;
-      const { opponent } = this.state; 
+      const { opponent } = this.state;
       return (
         <div>
           <h1>Your pokemon</h1>
@@ -173,16 +195,31 @@ export default class Game extends Component {
 
 
   render() {
-    const { players, spectators, gameOver } = this.state; 
+    const { players, spectators, gameOver } = this.state;
     return (
-      <div>
-        <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
-        <input type="text" value={this.state.text} onKeyDown={this.handleSubmit} onChange={this.handleChange} />
-        <h2>Terminal Command Bar</h2>
-        <input type="text" value={this.state.command} onKeyDown={this.handleCommands} onChange={this.handleCommandChange} />
-        {this.renderGame()}
+      <div className={css.gamePageContainer}>
+        <div className={css.gameContainer}>
+          <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
+          <h2>Terminal Command Bar</h2>
+          <input type="text" value={this.state.command} onKeyDown={this.handleCommands} onChange={this.handleCommandChange} />
+          {this.renderGame()}
+        </div>
+        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange}></Chat>
       </div>
     )
   }
 }
 
+
+// import Chat from './Chat.jsx';
+//
+// const Game = (props) => {
+//   return (
+//     <div className="game-page-container">
+//       <div className="game-container">
+//         <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
+//       </div>
+//       <Chat></Chat>
+//     </div>
+//   )
+// }

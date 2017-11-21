@@ -1,0 +1,69 @@
+/*https://javascriptplayground.com/blog/2016/07/css-modules-webpack-react/*/
+
+body {
+  height: 100%;
+}
+
+.gamePageContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 20px;
+}
+
+.gameContainer {
+  border: solid red;
+}
+
+.chatContainer {
+  background-color: #f0f0f0;
+  font-family: 'Roboto Mono', monospace;
+  height: 90vh;
+  position: relative;
+}
+
+.messageContainer {
+  padding: 0 10px 20px;
+  height: calc(100% - 60px);
+  position: relative;
+  overflow-y: scroll;
+}
+
+.messageInstance {
+  padding: 7px 0;
+}
+
+.messageUsername {
+  font-weight: 300;
+  font-size: 0.75rem;
+}
+
+.messageText {
+  font-size: 0.875rem;
+}
+
+.messageInputContainer {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+}
+
+.newMessageAlertBanner {
+  background-color: #0288D1;
+  color: white;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 2px 0;
+}
+
+.messageInput {
+  border-color: #e0e0e0;
+  padding: 10px;
+  min-height: 40px;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  resize: none;
+  vertical-align:top;
+  font-family: 'Roboto Mono', monospace;
+}
