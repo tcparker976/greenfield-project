@@ -33,26 +33,6 @@ export default class Game extends Component {
         {
           speaker: 'System',
           command:`Or something`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
         }
       ],
       socket: null,
