@@ -43,11 +43,12 @@ export default class Login extends Component {
       })
       .then(resp => {
         if (resp.data.match('Not Found')) {
-          console.log("not found")
+          console.log("user not found");
           this.setState({
             registered: false
           });
         } else {
+          console.log("user found");
           this.setState({
             registered: true
           });
@@ -61,7 +62,7 @@ export default class Login extends Component {
         <Redirect to="/signup"/>
       )
     } 
-    else if (this.state.registered === false) {
+    else if (this.state.registered === true) {
       return (
         <Redirect to="/home"/>
       )
