@@ -45,11 +45,14 @@ export default class Signup extends Component {
 
   handleSubimt() {
     console.log('click\'d');
-    axios.post('/signup'
-    , {
-      username: this.state.username,
-      password: this.state.password,
-      email: this.state.email
+    const username = this.state.username;
+    const password = this.state.password;
+    const email = this.state.email;
+    axios({
+      method: 'post',
+      url: '/signup',
+      baseUrl: process.env.baseURL || 'http://localhost:3000',
+      data: { username, password, email }
     });
   }
 

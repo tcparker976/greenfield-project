@@ -95,17 +95,15 @@ io.on('connection', (socket) => {
 
 app.post('/login', (req, resp) => {
   console.log('get request on /login');
-  const username = req.body;
-  const password = req.password;
-  
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log('username', username);
+  console.log('password', password);
   db.Users
-    .findOne({
-      username: username,
-      password: password
-    })
+    .findOne({where: { username, password } })
     .then(user => {
       console.log('SERVER: /login found user =', user);
-      
+      // console.log('use')
       if (!user) {
         console.log("redirecting to signup");
         resp.writeHead(201, {'Content-Type': 'text/plain'});

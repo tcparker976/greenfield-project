@@ -36,10 +36,13 @@ export default class Login extends Component {
 
   handleSubimt() {
     console.log('click\'d');
-    axios
-      .post('/login', {
-        username: this.state.username,
-        password: this.state.password
+    const username = this.state.username;
+    const password = this.state.password;
+    axios({
+        method: 'post',
+        url: '/login',
+        baseUrl: process.env.baseURL || 'http://localhost:3000',
+        data: { username, password }
       })
       .then(resp => {
         if (resp.data.match('Not Found')) {

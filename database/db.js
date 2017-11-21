@@ -1,47 +1,61 @@
-let Sequelize = require('sequelize')
-  , sequelize = null;
+const Sequelize = require('sequelize');
+const rgx = new RegExp(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
+const match = process.env.DATABASE_URL ? process.env.DATABASE_URL.match(rgx) : 'postgres://wairrcwaikkuob:b6f7a04b36dc888549bcedd0c99f7cec9c18eb3e83bda91f24bd31fbe60eba50@ec2-50-16-199-246.compute-1.amazonaws.com:5432/d10sjl0jdmpqhu'.match(rgx);
 
-if (!global.hasOwnProperty('db')) {
-  if (process.env.HEROKU_POSTGRESQL_BRONZE_URL) {
-    // if the application is executed on Heroku ... use the postgres database
-    sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL, {
-      dialect:  'postgres',
-      protocol: 'postgres',
-      port:     match[4],
-      host:     match[3],
-      logging:  false //false
-    })
-  } else {
-    // USE LOCAL MYSQL IF NO HEROKU
-    sequelize = new Sequelize('test_1', 'root', '', {
-      host: 'localhost',
-      dialect: 'mysql'
-    });
-  }
-  sequelize
-    .authenticate()
-    .then(() => {
-      console.log('Connection has been established successfully.');
-    })
-    .catch(err => {
-      console.error('Unable to connect to the database:', err);
-    });
-  const Users = sequelize.define('userito', {
+sequelize = new Sequelize(match[5], match[1], match[2], {
+    dialect:  'postgres',
+    protocol: 'postgres',
+    port:     match[4],
+    host:     match[3],
+    logging: false,
+    dialectOptions: {
+        ssl: true
+    }
+});
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
+
+const Users = sequelize.define('userito', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     username: Sequelize.STRING,
     password: Sequelize.STRING,
     email: Sequelize.STRING
+  }
+  , {
+    timestamps: false
   });
-  
-  Users.sync();
 
-  const save = (username, password, email) => {
-    return Users.create({ username, password, email });
-  };
 
-  module.exports.save = save;
-  module.exports.connection = sequelize;
-  module.exports.Users = Users;
-}
+Users.sync();
+
+
+const save = (username, password, email) => {
+  Users.create({ username, password, email })
+  return Users.create({ username, password, email });
+};
+
+// Users
+
+//   .findAll()
+//   .then(users => {
+//     console.log("FOUND USERS")
+//     console.log(users);
+//   })
+
+module.exports.save = save;
+module.exports.connection = sequelize;
+module.exports.Users = Users;
 
 
 // POSTGRES WITHOUT SEQUELIZE
