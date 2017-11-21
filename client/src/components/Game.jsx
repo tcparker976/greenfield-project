@@ -69,8 +69,8 @@ export default class Game extends Component {
     }
     socket.emit('join game', playerInitializer);
     socket.on('gamefull', (message) => {
-      console.log(message);
-      // alert(message);
+      // console.log(message);
+      alert(message);
     })
     socket.on('chat message', (message) => {
       var messageInstance = {
@@ -127,9 +127,12 @@ export default class Game extends Component {
   }
 
   handleChatInputChange(e) {
-    this.setState({
-      chatInput: e.target.value
-    });
+    // this if statement prevents the chat text area from expanding on submit (keyCode 13)
+    if (e.target.value !== '\n') {
+      this.setState({
+        chatInput: e.target.value
+      });
+    }
   }
 
   handleChatInputSubmit(e) {

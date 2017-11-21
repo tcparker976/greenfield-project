@@ -43,8 +43,7 @@ body {
 
 .messageInputContainer {
   position: absolute;
-  padding: inherit;
-  bottom: -40px;
+  bottom: 0px;
   width: 100%;
 }
 
@@ -57,10 +56,14 @@ body {
 }
 
 .messageInput {
-  padding: 0 5px;
-  height: 40px;
+  border-color: #e0e0e0;
+  padding: 10px;
+  min-height: 40px;
   font-size: 0.875rem;
   width: 100%;
   box-sizing: border-box;
   outline: none;
+  resize: none;
+  vertical-align:top;
+  font-family: 'Roboto Mono', monospace;
 }

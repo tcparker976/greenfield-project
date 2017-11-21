@@ -1,27 +1,29 @@
 import React, { Component } from 'react';
 import css from '../styles.css';
+import TextareaAutosize from "react-textarea-autosize";
 
 export default class Chat extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       shouldScroll: true,
       showNewMessageBanner: false
     };
+
+    this.handleChatInputSubmit = this.handleChatInputSubmit.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.messageArray.length !== this.props.messageArray.length) {
       let messageContainer = document.getElementsByClassName(css.messageContainer)[0];
       if (messageContainer.clientHeight + messageContainer.scrollTop === messageContainer.scrollHeight) {
-        console.log('User is scrolled to the bottom of messages, so do autoscroll');
+        // User is scrolled to the bottom of messages, so do autoscroll
         this.setState({
           shouldScroll: true,
           showNewMessageBanner: false
         });
       } else {
-        console.log('User is reading old messages above the scroll, so do NOT autoscroll');
+        // User is reading old messages above the scroll, so do NOT autoscroll
         this.setState({
           shouldScroll: false,
           showNewMessageBanner: true
@@ -56,7 +58,6 @@ export default class Chat extends Component {
   render() {
     return (
       <div className={css.chatContainer}>
-        <div className="brett"></div>
         <div className={css.messageContainer}>
           {this.props.messageArray.map(message => {
             return (
@@ -67,12 +68,10 @@ export default class Chat extends Component {
             );
           })}
         </div>
-        <div style={{position:'relative'}}>
-          <div className={css.messageInputContainer}>
-            {/* for future styling: https://alistapart.com/article/expanding-text-areas-made-elegant */}
-            <div className={css.newMessageAlertBanner} style={{display: this.state.showNewMessageBanner ? 'block' : 'none' }}>New Message</div>
-            <input type="text" className={css.messageInput} value={this.props.chatInput} onKeyDown={this.handleChatInputSubmit.bind(this)} onChange={this.props.handleChatInputChange}/>
-          </div>
+        <div className={css.messageInputContainer}>
+          {/* for future styling: https://alistapart.com/article/expanding-text-areas-made-elegant */}
+          <div className={css.newMessageAlertBanner} style={{display: this.state.showNewMessageBanner ? 'block' : 'none' }}>New Message</div>
+          <TextareaAutosize className={css.messageInput} value={this.props.chatInput} onKeyDown={this.handleChatInputSubmit} onChange={this.props.handleChatInputChange}/>
         </div>
       </div>
     )
