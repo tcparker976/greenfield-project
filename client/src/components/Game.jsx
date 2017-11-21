@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Chat from './Chat.jsx';
+import Terminal from './Terminal.jsx';
 import PlayerContainer from './PlayerContainer.jsx';
 import css from '../styles.css';
 
@@ -24,6 +25,16 @@ export default class Game extends Component {
       gameOver: false,
       chatInput: '',
       command: '',
+      commandArray: [
+        {
+          speaker: 'System',
+          command:`Let's get ready to battle!`
+        },
+        {
+          speaker: 'System',
+          command:`Or something`
+        }
+      ],
       socket: null,
     }
 
@@ -69,8 +80,8 @@ export default class Game extends Component {
     }
     socket.emit('join game', playerInitializer);
     socket.on('gamefull', (message) => {
-      // console.log(message);
-      alert(message);
+      console.log(message);
+      // alert(message);
     })
     socket.on('chat message', (message) => {
       var messageInstance = {
@@ -102,6 +113,11 @@ export default class Game extends Component {
         })
       }
     });
+    socket.on('attack processed', (data) => {
+      this.setState({
+        commandArray: this.state.commandArray.concat(data.basicAttackDialog)
+      });
+    })
     socket.on('turn move', (data) => {
       if (this.state.player1) {
         this.setState(prevState => {
@@ -138,9 +154,18 @@ export default class Game extends Component {
   handleChatInputSubmit(e) {
     if (e.keyCode === 13) {
       var socket = io();
-      this.state.socket.emit('chat message', {id: this.props.match.params.gameid, name: this.state.name, text: e.target.value});
+      this.state.socket.emit('chat message', {gameid: this.props.match.params.gameid, name: this.state.name, text: e.target.value});
       this.setState({
         chatInput: ''
+      });
+    }
+  }
+
+  handleCommandChange(e) {
+    // this if statement prevents the chat text area from expanding on submit (keyCode 13)
+    if (e.target.value !== '\n') {
+      this.setState({
+        command: e.target.value
       });
     }
   }
@@ -155,7 +180,7 @@ export default class Game extends Component {
             gameid: this.props.match.params.gameid,
             name: this.state.name,
             pokemon: this.state.pokemon
-          })
+          });
         } else {
           alert('invalid input!')
         }
@@ -164,12 +189,6 @@ export default class Game extends Component {
         });
       }
     }
-  }
-
-  handleCommandChange(e) {
-    this.setState({
-      command: e.target.value
-    });
   }
 
   renderGame() {
@@ -199,27 +218,11 @@ export default class Game extends Component {
     return (
       <div className={css.gamePageContainer}>
         <div className={css.gameContainer}>
-          <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
-          <h2>Terminal Command Bar</h2>
-          <input type="text" value={this.state.command} onKeyDown={this.handleCommands} onChange={this.handleCommandChange} />
           {this.renderGame()}
+          <Terminal commandArray={this.state.commandArray} commandInput={this.state.command} handleCommands={this.handleCommands} handleCommandChange={this.handleCommandChange} />
         </div>
-        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange}></Chat>
+        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} />
       </div>
     )
   }
 }
-
-
-// import Chat from './Chat.jsx';
-//
-// const Game = (props) => {
-//   return (
-//     <div className="game-page-container">
-//       <div className="game-container">
-//         <h2>You are playing pokemon and chatting with someone, whoa!!!!</h2>
-//       </div>
-//       <Chat></Chat>
-//     </div>
-//   )
-// }
