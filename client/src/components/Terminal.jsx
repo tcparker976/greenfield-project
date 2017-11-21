@@ -46,9 +46,9 @@ export default class Terminal extends Component {
     return (
       <div className={css.terminalContainer}>
         <div className={css.commandLogContainer}>
-          {this.props.commandArray.map(command => {
+          {this.props.commandArray.map((command, i) => {
             return (
-              <div className={css.commandInstance}>
+              <div key={i} className={css.commandInstance}>
                 {command.speaker}: {command.command}
               </div>
             )

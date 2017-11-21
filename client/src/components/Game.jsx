@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Chat from './Chat.jsx';
 import Terminal from './Terminal.jsx';
-import PlayerContainer from './PlayerContainer.jsx';
+import GameView from './GameView.jsx';
 import css from '../styles.css';
 
 export default class Game extends Component {
@@ -199,16 +199,8 @@ export default class Game extends Component {
         </div>
       )
     } else {
-      const { name, initialHealth, health } = this.state.pokemon;
-      const { opponent } = this.state;
-      return (
-        <div>
-          <h1>Your pokemon</h1>
-          <h4>{name}: {health}/{initialHealth} </h4>
-          <h1 style={{marginTop: '50px'}}>{opponent.name}'s pokemon</h1>
-          <h4>{opponent.pokemon.name}: {opponent.pokemon.health}/{opponent.pokemon.initialHealth} </h4>
-        </div>
-      )
+      const { pokemon, opponent } = this.state;
+      return <GameView opponent={opponent} pokemon={pokemon} />
     }
   }
 
