@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', (data) => {
     console.log('chat data:', data);
-    io.to(data.id).emit('chat message', data)
+    io.to(data.gameid).emit('chat message', data)
   });
 
   socket.on('attack', (data) => {
@@ -80,6 +80,18 @@ io.on('connection', (socket) => {
     const attackPower = game[player].pokemon.attack;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
     game[opponent].pokemon.health -= attackPower;
+    io.to(data.gameid).emit('attack processed', {
+      basicAttackDialog: [
+        {
+          speaker: data.name,
+          command:`${data.pokemon.name} attack!`
+        },
+        {
+          speaker: 'System',
+          command: `It did ${data.pokemon.attack} damage!`
+        }
+      ]
+    });
     if (game[opponent].pokemon.health <= 0) {
       io.to(data.gameid).emit('gameover', { name: game[player].name });
     } else {

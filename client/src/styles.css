@@ -67,3 +67,37 @@ body {
   vertical-align:top;
   font-family: 'Roboto Mono', monospace;
 }
+
+.terminalContainer {
+  position: relative;
+  font-family: 'Roboto Mono', monospace;
+  height: 400px;
+  display: block;
+  margin: 15px;
+  color: #37fe27;
+  background-color: rgba(0, 0, 0, 1);
+}
+
+.commandLogContainer {
+  padding: 0 10px 20px;
+  height: calc(100% - 50px);
+  overflow-y: scroll;
+}
+
+.commandInstance {
+  font-size: 0.875rem;
+  padding: 14px 0 0;
+}
+
+.commandInput {
+  position: absolute;
+  bottom: 0px;
+  border-color: #37fe27;
+  padding: 10px;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  background-color: rgba(0, 0, 0, 1);
+  color: #37fe27;
+}
