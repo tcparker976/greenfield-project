@@ -12,6 +12,17 @@
 
 ## Detailed Workflow
 
+1. In your local master, git pull upstream master
+2. Make a new branch `git checkout -b my_branch`
+3. Do your work, commit all your changes as you do
+4. Once done, in your branch do `git pull --rebase upstream master`
+5a. If there are any conflicts, fix them and then do `git rebase --continue`
+5b. You’ll need to `git add` your fixed changes (I think)
+6. `git push origin my_branch`
+7. Do a pull request into the organization
+8. Checkout the Heroku Review app
+9. Have someone else check it out and then THEY can merge it
+
 ### Fork the repo
 
 Use github’s interface to make a fork of the repo, then add that repo as an upstream remote:
@@ -120,8 +131,8 @@ Thanks for contributing!
 ### Guidelines
 
 1. Uphold the current code standard:
-    - Keep your code [DRY][].
-    - Apply the [boy scout rule][].
+    - Keep your code [DRY](http://wiki.c2.com/?DontRepeatYourself).
+    - Apply the [boy scout rule](http://programmer.97things.oreilly.com/wiki/index.php/The_Boy_Scout_Rule).
     - Follow [STYLE-GUIDE.md](_STYLE-GUIDE.md)
 1. Run the [tests][] before submitting a pull request.
 1. Tests are very, very important. Submit tests if your pull request contains
@@ -131,7 +142,7 @@ Thanks for contributing!
 
 This is just to help you organize your process
 
-- [ ] Did I cut my work branch off of master (don't cut new branches from existing feature brances)?
+- [ ] Did I cut my work branch off of master (don't cut new branches from existing feature branches)?
 - [ ] Did I follow the correct naming convention for my branch?
 - [ ] Is my branch focused on a single main change?
   - [ ] Do all of my changes directly relate to this change?
