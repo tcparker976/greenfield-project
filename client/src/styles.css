@@ -11,7 +11,8 @@ body {
 }
 
 .gameContainer {
-  border: solid red;
+  background: url('http://www.pokemontopaz.net/uploads/misc/battlegrass.png') no-repeat center center fixed;
+  background-size: cover;
 }
 
 .chatContainer {
@@ -71,33 +72,62 @@ body {
 .terminalContainer {
   position: relative;
   font-family: 'Roboto Mono', monospace;
-  height: 400px;
+  height: 150px;
   display: block;
-  margin: 15px;
-  color: #37fe27;
-  background-color: rgba(0, 0, 0, 1);
+  background-color: rgb(32, 81, 103);
+  color: rgb(233, 234, 236);
 }
 
 .commandLogContainer {
   padding: 0 10px 20px;
   height: calc(100% - 50px);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .commandInstance {
-  font-size: 0.875rem;
-  padding: 14px 0 0;
+  font-family: 'Press Start 2P', cursive;  
+  font-size: 0.575rem;
+  padding: 7px 0 0;
+  width: 100%;
 }
 
 .commandInput {
+  font-family: 'Press Start 2P', cursive;  
   position: absolute;
   bottom: 0px;
-  border-color: #37fe27;
+  border-color: rgb(205, 169, 86);
+  border-width: 5px;
   padding: 10px;
-  font-size: 0.875rem;
+  font-size: 0.575rem;
   width: 100%;
   box-sizing: border-box;
   resize: none;
-  background-color: rgba(0, 0, 0, 1);
-  color: #37fe27;
+  background-color: rgb(32, 81, 103);
+  color: rgb(233, 234, 236);
+}
+
+.commandInput:focus {
+  outline-width: 0;
+}
+
+.battleField {
+
+}
+
+.pokeView {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.stats {
+  font-family: 'Press Start 2P', cursive;
+  background-color: rgb(249, 248, 218);
+  color: rgb(117, 114, 104);
+  height: 100px;
+  width: 300px;
+  padding: 10px;
+  margin: 10px;
+  border: 4px solid rgb(41, 64, 14);
+  border-radius: 5px;
 }
