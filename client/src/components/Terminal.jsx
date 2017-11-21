@@ -49,7 +49,7 @@ export default class Terminal extends Component {
           {this.props.commandArray.map((command, i) => {
             return (
               <div key={i} className={css.commandInstance}>
-                {command.speaker}: {command.command}
+                {command.command}
               </div>
             )
           })}

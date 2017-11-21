@@ -1,6 +1,6 @@
 const TYPES = {
   normal: {
-      SUPER_EFFECT: null,
+      SUPER_EFFECT: [],
       NOT_VERY_EFFECTIVE: ['steel', 'rock'],
       NOT_EFFECTIVE: ['ghost']
     },
@@ -12,11 +12,11 @@ const TYPES = {
   flying: {
       SUPER_EFFECT: ['fighting', 'bug', 'grass'],
       NOT_VERY_EFFECTIVE: ['rock', 'steel', 'electric'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   poison: {
       SUPER_EFFECT: ['grass'],
-      NOT_VERY_EFFECTIVE: ['poison', 'ground', 'rock', 'ghost']
+      NOT_VERY_EFFECTIVE: ['poison', 'ground', 'rock', 'ghost'],
       NOT_EFFECTIVE: ['steel']
     },
   ground: {
@@ -32,7 +32,7 @@ const TYPES = {
   bug: {
       SUPER_EFFECT: ['grass', 'psychic', 'dark'],
       NOT_VERY_EFFECTIVE: ['fighting', 'flying', 'poison', 'ghost', 'steel', 'fire', 'fairy'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   ghost: {
       SUPER_EFFECT: ['ghost', 'psychic'],
@@ -42,22 +42,22 @@ const TYPES = {
   steel: {
       SUPER_EFFECT: ['rock', 'ice', 'fairy'],
       NOT_VERY_EFFECTIVE: ['steel', 'fire', 'water', 'electric'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   fire: {
       SUPER_EFFECT: ['bug', 'steel', 'grass', 'ice'],
       NOT_VERY_EFFECTIVE: ['rock', 'fire', 'water', 'dragon'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   water: {
       SUPER_EFFECT: ['ground', 'rock', 'fire'],
       NOT_VERY_EFFECTIVE: ['water', 'grass', 'dragon'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   grass: {
       SUPER_EFFECT: ['ground', 'rock', 'water'],
       NOT_VERY_EFFECTIVE: ['flying', 'poison', 'bug', 'steel', 'fire', 'dragon'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   electric: {
       SUPER_EFFECT: ['flying', 'water'],
@@ -71,8 +71,8 @@ const TYPES = {
     },
   ice: {
       SUPER_EFFECT: ['flying', 'ground', 'grass', 'dragon'],
-      NOT_VERY_EFFECTIVE: ['steel', 'fire', 'water', 'ice']
-      NOT_EFFECTIVE: null
+      NOT_VERY_EFFECTIVE: ['steel', 'fire', 'water', 'ice'],
+      NOT_EFFECTIVE: []
     },
   dragon: {
       SUPER_EFFECT: ['steel'],
@@ -82,12 +82,12 @@ const TYPES = {
   dark: {
       SUPER_EFFECT: ['ghost', 'psychic'],
       NOT_VERY_EFFECTIVE: ['fighting', 'dark', 'fairy'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     },
   fairy: {
       SUPER_EFFECT: ['fighting'],
       NOT_VERY_EFFECTIVE: ['poison', 'steel', 'fire'],
-      NOT_EFFECTIVE: null
+      NOT_EFFECTIVE: []
     }
 }
 
@@ -106,12 +106,12 @@ const findRandomIV = () => {
 // I've hard coded this into the formula and simplified the equations.
 
 const calculateBaseHealth = (baseHP) => {
-   return ((baseHP + findRandomIV()) / 2) + 35;
+   return Math.round(((baseHP + findRandomIV()) / 2) + 35);
    // reference https://bulbapedia.bulbagarden.net/wiki/Individual_values 
 }
 
 const calculateBaseStat = (baseStat) => {
-  return ((baseStat + findRandomIV()) / 2) + 5;
+  return Math.round(((baseStat + findRandomIV()) / 2) + 5);
   // reference https://bulbapedia.bulbagarden.net/wiki/Individual_values 
 }
 
@@ -139,61 +139,67 @@ const modifierCalculation = (attackerTypes, moveType, opponentTypes) => {
   let Critical = criticalChance();
   let logStatement = '';
 
-  if (attackersTypes.indexOf(moveType) !== -1) {
+  if (Critical > 1) {
+    logStatement += 'Critical strike! '
+  }
+
+  if (attackerTypes.indexOf(moveType) !== -1) {
     STAB = 1.5; 
   }
 
-  if (TYPES[moveType].SUPER_EFFECT.indexOf(opponentsType) !== -1) {
-    Type = 2;
-    logStatement = 'It\'s super effective!';
-  }
-
-  if (TYPES[moveType].NOT_VERY_EFFECTIVE.indexOf(opponentsType) !== -1) {
-    Type = 0.5;
-    logStatement = 'It\'s not very effective...'
-  }
-
-  if(TYPES[moveType].NOT_EFFECTIVE.indexOf(opponentsType) !== -1) {
-    Type = 0
-    logStatement = 'It had no effect.'
+  for (let i = 0; i < opponentTypes.length; i++) {
+    if (TYPES[moveType].SUPER_EFFECT.indexOf(opponentTypes[i]) !== -1) {
+      Type = 2;
+      logStatement += 'It\'s super effective!';
+      break;
+    }
+  
+    if (TYPES[moveType].NOT_VERY_EFFECTIVE.indexOf(opponentTypes[i]) !== -1) {
+      Type = 0.5;
+      logStatement += 'It\'s not very effective...'
+      break;
+    }
+  
+    if(TYPES[moveType].NOT_EFFECTIVE.indexOf(opponentTypes[i]) !== -1) {
+      Type = 0
+      logStatement += 'It had no effect.'
+      break; 
+    }
   }
 
   return {
     modifierDamage: STAB * Type * Critical,
-    logStatement: logStatement 
+    logStatement
   }
 }
 
 // again, hardcoding level 25
 // reference: https://bulbapedia.bulbagarden.net/wiki/Damage 
-const damageCalculation = (movePower, userAttackStat, opponentsDefenseStat) => {
-  // going off of what we have in /examples/pokemonState.js
-  let activePlayer = '';
-  let opposingPlayer = '';
-  if (gameState.activePlayerId === gameState.players[0].id) {
-   activePlayer = players[0];
-   opposingPlayer = players[1]; 
-  } else {
-    activePlayer = players[1];
-    opposingPlayer = players[0];
-  }
-
-  let attackerTypes = activePlayer.pokemon.types;
-  let moveType = activePlayer.pokemon.types[0] // <--- preferably a function that delivers the chosen move type 
-                            // hardcoded to be the pokemon's first type for now
+const damageCalculation = (activePlayer, opponent) => {
+  
+  const attackerTypes = activePlayer.pokemon.types; 
+  let moveType; 
+  attackerTypes.forEach(type => {
+    if (type.slot == 1) {
+      moveType = type.type.name 
+    }
+  }); 
+  const opponentTypes = opponent.pokemon.types.map(type => type.type.name);
   let modifier = modifierCalculation(attackerTypes, moveType, opponentTypes) 
 
+  const userAttackStat = activePlayer.pokemon.attack; 
+  const opponentDefenseStat = opponent.pokemon.defense;
   return {
-    damageToBeDone: (((12 * movePower * (userAttackStat / opponentsDefenseStat)) / 50) + 2) * modifier.modifierDamage;
-    logStatement: modifier.logStatement;
+    damageToBeDone: Math.round((((12 * 60 * (userAttackStat / opponentDefenseStat)) / 50) + 2) * modifier.modifierDamage),
+    logStatement: modifier.logStatement
   };
-
+  
 }
 
 
 module.exports = {
-  calculateBaseHealth: calculateBaseHealth,
-  calculateBaseStat: calculateBaseStat,
-  damageCalculation: damageCalculation,
+  calculateBaseHealth, 
+  calculateBaseStat,
+  damageCalculation
 }
 

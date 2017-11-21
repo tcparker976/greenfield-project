@@ -5,8 +5,9 @@ const PokemonStats = (props) => {
   console.log(props);
   return (
     <div className={css.stats}>
-      <h2>{props.stats.name.charAt(0).toUpperCase() + props.stats.name.slice(1)}</h2>
-      <h5>{props.stats.health} / {props.stats.initialHealth}</h5>
+      <h2>{props.stats.name.toUpperCase()}</h2>
+      <h4 style={{marginBottom: '0px'}}> {props.stats.health} / {props.stats.initialHealth} </h4>
+      <h6 style={{margin: '2px'}}> atk: {props.stats.attack} - def: {props.stats.defense} </h6>
     </div>
   )
 }

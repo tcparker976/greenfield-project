@@ -14,12 +14,7 @@ export default class Game extends Component {
       player2: false,
       messageArray: [],
       name: null,
-      pokemon: {
-        name: 'pikachu',
-        initialHealth: 80,
-        health: 80,
-        attack: 24
-      },
+      pokemon: null,
       opponent: null,
       isActive: null,
       gameOver: false,
@@ -29,10 +24,6 @@ export default class Game extends Component {
         {
           speaker: 'System',
           command:`Let's get ready to battle!`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
         }
       ],
       socket: null,
@@ -96,8 +87,10 @@ export default class Game extends Component {
       })
     });
     socket.on('player', (data) => {
+      console.log(data);
       this.setState({
-        [data]: true
+        [data.player]: true,
+        pokemon: data.pokemon
       })
     });
     socket.on('ready', (data) => {
@@ -207,6 +200,8 @@ export default class Game extends Component {
 
   render() {
     const { players, spectators, gameOver } = this.state;
+    console.log(this.state.pokemon);
+    console.log(this.state.opponent);
     return (
       <div className={css.gamePageContainer}>
         <div className={css.gameContainer}>
