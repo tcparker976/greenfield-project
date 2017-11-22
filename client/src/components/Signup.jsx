@@ -101,7 +101,7 @@ export default class Signup extends Component {
               </div>
               <div className={css.seperator}></div>
               <div className={css.altAuthText}>Have an account?</div>
-              <button className={css.gameButton}><Link to='/login' className={css.gameButtonLink}>Log In</Link></button>
+              <Link to='/login' className={css.gameButtonLink}><button className={css.gameButton}>Log In</button></Link>
             </div>
           </div>
         </div>
