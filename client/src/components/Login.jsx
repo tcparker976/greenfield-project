@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Route, Redirect } from 'react-router-dom';
-
+import css from '../styles.css';
 import axios from 'axios';
 
 export default class Login extends Component {
@@ -12,7 +12,7 @@ export default class Login extends Component {
       password: '',
       registered: undefined
     };
-  
+
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubimt = this.handleSubimt.bind(this);
@@ -64,7 +64,7 @@ export default class Login extends Component {
       return (
         <Redirect to="/signup"/>
       )
-    } 
+    }
     else if (this.state.registered === true) {
       return (
         <Redirect to="/home"/>
@@ -73,19 +73,28 @@ export default class Login extends Component {
     else {
       return (
         <div>
-          <h1>Login Page</h1>
+          <div className={css.navBar}>
+            <div className={css.logo}>Chattermon</div>
+            <div className={css.navBarLinksContainer}>
+              <Link to={'/signup'} className={css.navBarLinkA}><div className={css.navBarLink}>Sign Up</div></Link>
+            </div>
+          </div>
 
-          <p>Username</p>
-          <input type="text" value={this.state.username} 
-          onChange={this.handleUsernameChange}/>
-
-          <p>Password</p>
-          <input type="password" value={this.state.password} 
-          onChange={this.handlePasswordChange}/>
-
-          <br/>
-          <Link to='/signup'><span>Sign up</span></Link>
-          <button onClick={this.handleSubimt}>Login</button>
+          <div className={css.contentSuperWrapper}>
+            <div className={css.welcomeControlPannel}>
+              <div className={css.welcomeMessage}>Welcome Back</div>
+              <div className={css.controlsContainer}>
+                <div className={css.joinGameContainer}>
+                  <input type="text" className={css.signInUpField} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
+                  <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
+                  <button className={css.gameButton} onClick={this.handleSubimt}>Login</button>
+                </div>
+                <div className={css.seperator}></div>
+                <div className={css.altAuthText}>New here?</div>
+                <Link to='/signup' className={css.gameButtonLink}><button className={css.gameButton}>Sign up</button></Link>
+              </div>
+            </div>
+          </div>
         </div>
       )
     }

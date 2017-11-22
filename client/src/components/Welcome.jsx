@@ -71,7 +71,7 @@ export default class Welcome extends Component {
           <div className={css.welcomeControlPannel}>
             <div className={css.welcomeMessage}>Welcome back James!</div>
             <div className={css.controlsContainer}>
-              <Link to={'game/' + this.state.newGameId} className={css.gameButtonLink}><button className={css.gameButton} onClick={this.handleNewGameClick}>New Game</button></Link>
+              <Link to={'game/' + this.state.newGameId} className={css.gameButtonLink}><button className={css.gameButton}>New Game</button></Link>
               <div className={css.seperator}></div>
               <div className={css.joinGameContainer}>
                 <input className={css.roomIdField} placeholder="Room ID" value={this.state.roomInput} onKeyDown={this.handleRoomInputReturn} onChange={this.handleRoomInputChange}></input>

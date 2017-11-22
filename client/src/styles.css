@@ -147,14 +147,13 @@ body {
 
 .welcomeControlPannel {
   width: 400px;
-  height: 300px;
   background-color: #f0f0f0;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
 .welcomeMessage {
-  color: #000;
+  color: rgba(0, 0, 0, 0.87);
   font-family: 'Press Start 2P', cursive;
   font-size: 1rem;
   text-align: center;
@@ -199,5 +198,24 @@ body {
   display: block;
   width: 176px;
   padding: 10px;
+  margin-bottom: 20px;
+}
+
+.signInUpField {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.75rem;
+  margin: 0 auto;
+  /*height: 40px;*/
+  display: block;
+  width: 250px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.altAuthText {
+  color: rgba(0, 0, 0, 0.54);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.875rem;
+  text-align: center;
   margin-bottom: 20px;
 }
