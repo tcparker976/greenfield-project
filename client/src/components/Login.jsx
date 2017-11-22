@@ -10,7 +10,9 @@ export default class Login extends Component {
     this.state = {
       username: '',
       password: '',
-      registered: undefined
+      registered: undefined,
+      usernameError: false,
+      passwordError: false
     };
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -71,12 +73,33 @@ export default class Login extends Component {
       )
     }
     else {
+      let usernameField = null;
+      let passwordField = null;
+
+      if (this.state.usernameError) {
+        usernameField = <div className={css.fieldErrorWrapper}>
+          <div className={css.fieldErrorText}>Username does not exist</div>
+          <input type="text" className={css.fieldErrorInput} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
+        </div>
+      } else {
+        usernameField = <input type="text" className={css.signInUpField} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
+      }
+
+      if (this.state.passwordError) {
+        passwordField = <div className={css.fieldErrorWrapper}>
+          <div className={css.fieldErrorText}>Password is incorrect</div>
+          <input type="password" className={css.fieldErrorInput} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
+        </div>
+      } else {
+        passwordField = <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
+      }
+
       return (
         <div>
           <div className={css.navBar}>
             <div className={css.logo}>Chattermon</div>
             <div className={css.navBarLinksContainer}>
-              <Link to={'/signup'} className={css.navBarLinkA}><div className={css.navBarLink}>Sign Up</div></Link>
+              <div className={css.navBarLink}><Link to={'/signup'} className={css.navBarLinkA}>Sign Up</Link></div>
             </div>
           </div>
 
@@ -85,13 +108,15 @@ export default class Login extends Component {
               <div className={css.welcomeMessage}>Welcome Back</div>
               <div className={css.controlsContainer}>
                 <div className={css.joinGameContainer}>
-                  <input type="text" className={css.signInUpField} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
-                  <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
+                  {/* <input type="text" className={css.signInUpField} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
+                  <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input> */}
+                  {usernameField}
+                  {passwordField}
                   <button className={css.gameButton} onClick={this.handleSubimt}>Login</button>
                 </div>
                 <div className={css.seperator}></div>
                 <div className={css.altAuthText}>New here?</div>
-                <Link to='/signup' className={css.gameButtonLink}><button className={css.gameButton}>Sign up</button></Link>
+                <button className={css.gameButton}><Link to='/signup' className={css.gameButtonLink}>Sign up</Link></button>
               </div>
             </div>
           </div>
