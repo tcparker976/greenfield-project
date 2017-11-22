@@ -36,14 +36,59 @@ const Users = sequelize.define('userito', {
     timestamps: false
   });
 
+const Pokemon = sequelize.define('pokerito', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    unique: true
+  },  
+  name: Sequelize.STRING,
+  types: Sequelize.ARRAY(Sequelize.TEXT),
+  baseHealth: Sequelize.INTEGER,
+  baseAttack: Sequelize.INTEGER,
+  baseDefense: Sequelize.INTEGER,
+  backSprite: Sequelize.STRING,
+  frontSprite: Sequelize.STRING
+},
+  {
+    timestamps: false
+});
+
 
 Users.sync();
+Pokemon.sync();
 
-
-const save = (username, password, email) => {
+const saveUser = (username, password, email) => {
   Users.create({ username, password, email })
   return Users.create({ username, password, email });
 };
+
+const savePokemon = (pokemonObj) => {
+  console.log('IN SAVE POKEMON!');
+  Pokemon.create(pokemonObj).then((data) => {
+    // console.log('DATA: ', data);
+    console.log('POKEMON SAVED TO DB!')
+  })
+  .catch((err) => {
+    console.log('POKEMON SAVED ERROR: ', err);
+  });
+}
+
+const checkForPokemon = (callback) => {
+  Pokemon.findAll({})
+    .then((data) => {
+      if (data.length < 150) {
+        console.log('NO POKEMON IN DB!');
+        callback(false, savePokemon);
+      } else {
+        console.log('POKEMON EXIST IN DB!');
+        callback(true)
+      }
+      // console.log('POKEMON EXIST IN DB')
+      // console.log('DATA: ', data);
+      // callback(true);
+    })
+  }
 
 // Users
 
@@ -53,10 +98,14 @@ const save = (username, password, email) => {
 //     console.log(users);
 //   })
 
-module.exports.save = save;
-module.exports.connection = sequelize;
-module.exports.Users = Users;
 
+
+module.exports = {
+  saveUser: saveUser,
+  Users: Users,
+  Pokemon: Pokemon,
+  checkForPokemon: checkForPokemon
+}
 
 // POSTGRES WITHOUT SEQUELIZE
 // const { Client } = require('pg');

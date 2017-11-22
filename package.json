@@ -67,7 +67,6 @@
       "es2015"
     ]
   },
-  "version": "1.0.0",
   "main": ".eslintrc.js",
   "repository": {
     "type": "git",

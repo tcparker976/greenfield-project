@@ -46,7 +46,19 @@ export default class Signup extends Component {
   }
 
   handleSubimt() {
-    console.log('click\'d');
+   console.log('click\'d');
+
+    axios({
+      method: 'post',
+      url: '/',
+      baseUrl: process.env.baseURL || 'http://localhost:3000',
+    })
+      .then(function(response) {
+        console.log('AXIOS WORKED?')
+      // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
+    });
+
+    
     const username = this.state.username;
     const password = this.state.password;
     const email = this.state.email;
