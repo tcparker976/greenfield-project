@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
 });
 
 app.post('/login', (req, resp) => {
-  console.log('get request on /login');
+  console.log('post request on /login');
   const username = req.body.username;
   const password = req.body.password;
   console.log('username', username);
@@ -121,7 +121,7 @@ app.post('/login', (req, resp) => {
         resp.writeHead(201, {'Content-Type': 'text/plain'});
         resp.end('Not Found');
       }
-      
+
       else {
         console.log("redirecting to home");
         resp.redirect('/');
@@ -130,7 +130,7 @@ app.post('/login', (req, resp) => {
 })
 
 app.post('/signup', (req, resp) => {
-  console.log('get request on /signup');
+  console.log('post request on /signup');
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;

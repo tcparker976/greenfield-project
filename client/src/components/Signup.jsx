@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-
+import css from '../styles.css';
 import axios from 'axios';
 
 export default class Signup extends Component {
@@ -10,9 +10,11 @@ export default class Signup extends Component {
     this.state = {
       username: '',
       password: '',
-      email: ''
+      email: '',
+      usernameUniqueError: true,
+      emailUniqueError: false
     };
-  
+
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -57,24 +59,52 @@ export default class Signup extends Component {
   }
 
   render() {
+    let usernameField = null;
+    let emailField = null;
+
+    if (this.state.usernameUniqueError) {
+      usernameField = <div className={css.fieldErrorWrapper}>
+        <div className={css.fieldErrorText}>Username already exists</div>
+        <input type="text" className={css.fieldErrorInput} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
+      </div>
+    } else {
+      usernameField = <input type="text" className={css.signInUpField} placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}></input>
+    }
+
+    if (this.state.emailUniqueError) {
+      emailField = <div className={css.fieldErrorWrapper}>
+        <div className={css.fieldErrorText}>Email has an account already</div>
+        <input type="text" className={css.fieldErrorInput} placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}></input>
+      </div>
+    } else {
+      emailField = <input type="text" className={css.signInUpField} placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}></input>
+    }
+
     return (
       <div>
-        <h1>Signup Page</h1>
+        <div className={css.navBar}>
+          <div className={css.logo}>Chattermon</div>
+          <div className={css.navBarLinksContainer}>
+            <div className={css.navBarLink}><Link to={'/login'} className={css.navBarLinkA}>Log In</Link></div>
+          </div>
+        </div>
 
-        <p>Username</p>
-        <input type="text" value={this.state.username} 
-        onChange={this.handleUsernameChange}/>
-
-        <p>Password</p>
-        <input type="password" value={this.state.password} 
-        onChange={this.handlePasswordChange}/>
-
-        <p>Email</p>
-        <input type="text" value={this.state.email} 
-        onChange={this.handleEmailChange}/>
-
-        <br/>
-        <button onClick={this.handleSubimt}>Signup</button>
+        <div className={css.contentSuperWrapper}>
+          <div className={css.welcomeControlPannel}>
+            <div className={css.welcomeMessage}>Sign Up</div>
+            <div className={css.controlsContainer}>
+              <div className={css.joinGameContainer}>
+                {usernameField}
+                <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
+                {emailField}
+                <button className={css.gameButton} onClick={this.handleSubimt}>Sign Up</button>
+              </div>
+              <div className={css.seperator}></div>
+              <div className={css.altAuthText}>Have an account?</div>
+              <Link to='/login' className={css.gameButtonLink}><button className={css.gameButton}>Log In</button></Link>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
