@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+<<<<<<< HEAD
 import css from '../styles.css';
+=======
+import validator from '../../../server/helpers/validator.js';
+
+>>>>>>> avoid duplicates
 import axios from 'axios';
 
 export default class Signup extends Component {
@@ -50,12 +55,38 @@ export default class Signup extends Component {
     const username = this.state.username;
     const password = this.state.password;
     const email = this.state.email;
+
+    if (!username.match(validator.username)) {
+      alert('Username should only conatain latin letters and/or numbers, and be from 8 to 20 characters long');
+      return;
+    }
+    else if (!password.match(validator.password)) {
+      alert('Password should contain at least one letter, number and special character, and be from 8 to 32 characters long');
+      return;
+    }
+    else if (!email.match(validator.email)) {
+      alert('Incorrect email format');
+      return;
+    }
+    
     axios({
-      method: 'post',
-      url: '/signup',
-      baseUrl: process.env.baseURL || 'http://localhost:3000',
-      data: { username, password, email }
-    });
+        method: 'post',
+        url: '/signup',
+        baseUrl: process.env.baseURL || 'http://localhost:3000',
+        data: { username, password, email }
+      })
+      .then(resp => {
+        console.log(resp.data)
+        if (resp.data.match('Email Already Exists')) {
+          alert('This email already exists, try again!');
+        }
+        else if (resp.data.match('Username Already Exists')) {
+          alert('This username already exists, try again!');
+        }
+        else {
+          alert('You have successfully created a user and can now login');
+        }
+      })
   }
 
   render() {
@@ -89,6 +120,7 @@ export default class Signup extends Component {
           </div>
         </div>
 
+<<<<<<< HEAD
         <div className={css.contentSuperWrapper}>
           <div className={css.welcomeControlPannel}>
             <div className={css.welcomeMessage}>Sign Up</div>
@@ -105,6 +137,11 @@ export default class Signup extends Component {
             </div>
           </div>
         </div>
+=======
+        <br/>
+        <Link to='/login'><span>Login</span></Link>
+        <button onClick={this.handleSubimt}>Signup</button>
+>>>>>>> avoid duplicates
       </div>
     )
   }

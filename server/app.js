@@ -168,7 +168,6 @@ app.post('/login', (req, resp) => {
     .findOne({where: { username, password } })
     .then(user => {
       console.log('SERVER: /login found user =', user);
-      // console.log('use')
       if (!user) {
         console.log("redirecting to signup");
         resp.writeHead(201, {'Content-Type': 'text/plain'});
@@ -189,13 +188,23 @@ app.post('/signup', (req, resp) => {
   const email = req.body.email;
   db.saveUser(username, password, email)
     .then(newuser => {
-      resp.writeHead(201, {'Content-Type': 'text/plain'});
-      resp.end('User Created');
+      console.log(newuser)
+      if (newuser.dataValues) {
+        resp.writeHead(201, {'Content-Type': 'text/plain'});
+        resp.end('User Created');
+      }
+      else if (newuser.match('Username Already Exists')) {
+        resp.writeHead(201, {'Content-Type': 'text/plain'});
+        resp.end('Username Already Exists');
+      }
+      else if (newuser.match('Email Already Exists')) {
+        resp.writeHead(201, {'Content-Type': 'text/plain'});
+        resp.end('Email Already Exists');
+      }
     })
     .catch(err => {
       throw new Error(err)
     });
-  console.log(req.body);
 })
 
 // a catch-all route for BrowserRouter - enables direct linking to this point.
