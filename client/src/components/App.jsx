@@ -3,6 +3,9 @@ import { Switch, Route } from 'react-router-dom';
 
 import Home from './Home.jsx';
 import Game from './Game.jsx';
+import Login from './Login.jsx';
+import Signup from './Signup.jsx';
+import Welcome from './Welcome.jsx'
 import io from 'socket.io-client';
 
 const App = () => {
@@ -10,7 +13,11 @@ const App = () => {
     <div>
       <Switch>
         <Route exact path='/' component={Home} />
+        <Route path='/home' component={Home} />
         <Route path='/game/:gameid' component={Game} />
+        <Route path='/login' component={Login} />
+        <Route path='/signup' component={Signup} />
+        <Route path='/welcome' component={Welcome} />
       </Switch>
     </div>
   );

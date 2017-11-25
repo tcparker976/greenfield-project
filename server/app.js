@@ -7,9 +7,12 @@ const Promise = require('bluebird');
 const axios = require('axios');
 
 const { calculateBaseHealth, calculateBaseStat, damageCalculation } = require('../game-logic.js');
+const db = require('../database/db.js');
+const bodyParser = require('body-parser');
 
 const dist = path.join(__dirname, '/../client/dist');
 
+app.use(bodyParser());
 app.use(express.static(dist));
 
 
@@ -126,6 +129,46 @@ io.on('connection', (socket) => {
   })
 
 });
+
+app.post('/login', (req, resp) => {
+  console.log('post request on /login');
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log('username', username);
+  console.log('password', password);
+  db.Users
+    .findOne({where: { username, password } })
+    .then(user => {
+      console.log('SERVER: /login found user =', user);
+      // console.log('use')
+      if (!user) {
+        console.log("redirecting to signup");
+        resp.writeHead(201, {'Content-Type': 'text/plain'});
+        resp.end('Not Found');
+      }
+
+      else {
+        console.log("redirecting to home");
+        resp.redirect('/');
+      }
+    })
+})
+
+app.post('/signup', (req, resp) => {
+  console.log('post request on /signup');
+  const username = req.body.username;
+  const password = req.body.password;
+  const email = req.body.email;
+  db.save(username, password, email)
+    .then(newuser => {
+      resp.writeHead(201, {'Content-Type': 'text/plain'});
+      resp.end('User Created');
+    })
+    .catch(err => {
+      throw new Error(err)
+    });
+  console.log(req.body);
+})
 
 // a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, res) => {
