@@ -8,6 +8,7 @@ const axios = require('axios');
 const db = require('../database/db.js');
 const bodyParser = require('body-parser');
 const { calculateBaseHealth, calculateBaseStat, damageCalculation } = require('../game-logic.js');
+const pokeapi = require('./helpers/pokeapi.js');
 
 
 const dist = path.join(__dirname, '/../client/dist');

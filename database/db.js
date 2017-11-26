@@ -77,16 +77,14 @@ const savePokemon = (pokemonObj) => {
 const checkForPokemon = (callback) => {
   Pokemon.findAll({})
     .then((data) => {
-      if (data.length < 150) {
-        console.log('There are less than 150 pokemon in the DB!');
-        callback(false, savePokemon);
+      if (data.length < 151) {
+        console.log('There are less than 151 pokemon in the DB!');
+        console.log('NUMBER POKES IN DB: ', data.length);
+        // callback(false, savePokemon);  //uncomment this if you need to save pokemon in the db --> refer to pokeapi.js
       } else {
-        console.log('All 150 pokemon are already in the DB!');
-        callback(true)
+        console.log('All 151 pokemon are already in the DB!');
+        console.log('NUMBER POKES IN DB: ', data.length)
       }
-      // console.log('POKEMON EXIST IN DB')
-      // console.log('DATA: ', data);
-      // callback(true);
     })
   }
 
