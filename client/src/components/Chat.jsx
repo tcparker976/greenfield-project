@@ -71,7 +71,7 @@ export default class Chat extends Component {
         <div className={css.messageInputContainer}>
           {/* for future styling: https://alistapart.com/article/expanding-text-areas-made-elegant */}
           <div className={css.newMessageAlertBanner} style={{display: this.state.showNewMessageBanner ? 'block' : 'none' }}>New Message</div>
-          <TextareaAutosize className={css.messageInput} value={this.props.chatInput} onKeyDown={this.handleChatInputSubmit} onChange={this.props.handleChatInputChange}/>
+          <TextareaAutosize className={css.messageInput} value={this.props.chatInput} placeholder="gotta catch em..." onKeyDown={this.handleChatInputSubmit} onChange={this.props.handleChatInputChange}/>
         </div>
       </div>
     )

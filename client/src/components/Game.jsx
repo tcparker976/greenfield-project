@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Chat from './Chat.jsx';
 import Terminal from './Terminal.jsx';
-import PlayerContainer from './PlayerContainer.jsx';
+import GameView from './GameView.jsx';
+import GameState from './GameState.jsx';
+import Logo from './Logo.jsx';
 import css from '../styles.css';
 
 export default class Game extends Component {
@@ -14,12 +16,7 @@ export default class Game extends Component {
       player2: false,
       messageArray: [],
       name: null,
-      pokemon: {
-        name: 'pikachu',
-        initialHealth: 80,
-        health: 80,
-        attack: 24
-      },
+      pokemon: null,
       opponent: null,
       isActive: null,
       gameOver: false,
@@ -27,12 +24,7 @@ export default class Game extends Component {
       command: '',
       commandArray: [
         {
-          speaker: 'System',
-          command:`Let's get ready to battle!`
-        },
-        {
-          speaker: 'System',
-          command:`Or something`
+          command: `Let's get ready to battle!`
         }
       ],
       socket: null,
@@ -88,7 +80,6 @@ export default class Game extends Component {
         name: message.name,
         text: message.text
       }
-      console.log(messageInstance);
       this.setState(prevState => {
         return {
           messageArray: prevState.messageArray.concat(messageInstance)
@@ -96,8 +87,10 @@ export default class Game extends Component {
       })
     });
     socket.on('player', (data) => {
+      console.log(data);
       this.setState({
-        [data]: true
+        [data.player]: true,
+        pokemon: data.pokemon
       })
     });
     socket.on('ready', (data) => {
@@ -114,10 +107,29 @@ export default class Game extends Component {
       }
     });
     socket.on('attack processed', (data) => {
-      this.setState({
-        commandArray: this.state.commandArray.concat(data.basicAttackDialog)
+      this.setState(prevState => {
+        return {
+          commandArray: prevState.commandArray.concat(data.basicAttackDialog)
+        }
       });
     })
+    socket.on('swap move', (data) => {
+      if (this.state.player1) {
+        this.setState(prevState => {
+          return {
+            pokemon: data.player1.pokemon,
+            opponent: data.player2,
+          }
+        });
+      } else {
+        this.setState(prevState => {
+          return {
+          pokemon: data.player2.pokemon,
+          opponent: data.player1,
+          }
+        })
+      }
+    });
     socket.on('turn move', (data) => {
       if (this.state.player1) {
         this.setState(prevState => {
@@ -181,6 +193,25 @@ export default class Game extends Component {
             name: this.state.name,
             pokemon: this.state.pokemon
           });
+        } else if (e.target.value.split(' ')[0] === "I" || e.target.value.split(' ')[0] === "i" && e.target.value.split(' ')[1] === "choose") {
+          let swap = e.target.value.split(' ')[3];
+          let isAvailable = false;
+          let index;
+          this.state.pokemon.forEach((poke, i) => {
+            if (poke.name === swap) {
+              isAvailable = true;
+              index = i;
+            }
+          });
+          if (isAvailable) {
+            this.state.socket.emit('switch', {
+              gameid: this.props.match.params.gameid,
+              pokemon: this.state.pokemon,
+              index
+            })
+          } else {
+            alert('you dont have that pokemon!');
+          }
         } else {
           alert('invalid input!')
         }
@@ -194,19 +225,31 @@ export default class Game extends Component {
   renderGame() {
     if (!this.state.opponent) {
       return (
-        <div>
+        <div className={css.loading}>
           <h1>Awaiting opponent...</h1>
         </div>
       )
     } else {
-      const { name, initialHealth, health } = this.state.pokemon;
-      const { opponent } = this.state;
+      const { pokemon, opponent } = this.state;
+      return <GameView opponent={opponent} pokemon={pokemon} />
+    }
+  }
+
+  renderSideBar() {
+    if (!this.state.opponent) {
       return (
-        <div>
-          <h1>Your pokemon</h1>
-          <h4>{name}: {health}/{initialHealth} </h4>
-          <h1 style={{marginTop: '50px'}}>{opponent.name}'s pokemon</h1>
-          <h4>{opponent.pokemon.name}: {opponent.pokemon.health}/{opponent.pokemon.initialHealth} </h4>
+        <div className={css.stateContainer}>
+          <Logo />
+          <GameState pokemon={[]} />
+          <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
+        </div>
+      )
+    } else {
+      return (
+        <div className={css.stateContainer}>
+          <Logo />
+          <GameState pokemon={this.state.pokemon} />
+          <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
         </div>
       )
     }
@@ -214,14 +257,16 @@ export default class Game extends Component {
 
 
   render() {
-    const { players, spectators, gameOver } = this.state;
+    const { players, spectators, gameOver, pokemon } = this.state;
+    console.log(this.state.pokemon);
+    console.log(this.state.opponent);
     return (
       <div className={css.gamePageContainer}>
         <div className={css.gameContainer}>
           {this.renderGame()}
           <Terminal commandArray={this.state.commandArray} commandInput={this.state.command} handleCommands={this.handleCommands} handleCommandChange={this.handleCommandChange} />
         </div>
-        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} />
+        {this.renderSideBar()}
       </div>
     )
   }
