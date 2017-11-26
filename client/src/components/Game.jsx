@@ -80,7 +80,6 @@ export default class Game extends Component {
         name: message.name,
         text: message.text
       }
-      console.log(messageInstance);
       this.setState(prevState => {
         return {
           messageArray: prevState.messageArray.concat(messageInstance)
@@ -108,8 +107,10 @@ export default class Game extends Component {
       }
     });
     socket.on('attack processed', (data) => {
-      this.setState({
-        commandArray: this.state.commandArray.concat(data.basicAttackDialog)
+      this.setState(prevState => {
+        return {
+          commandArray: prevState.commandArray.concat(data.basicAttackDialog)
+        }
       });
     })
     socket.on('swap move', (data) => {

@@ -140,7 +140,7 @@ const modifierCalculation = (attackerTypes, moveType, opponentTypes) => {
   let logStatement = '';
 
   if (Critical > 1) {
-    logStatement += 'Critical strike! '
+    logStatement += 'A critical hit! '
   }
 
   if (attackerTypes.indexOf(moveType) !== -1) {
