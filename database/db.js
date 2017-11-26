@@ -78,10 +78,10 @@ const checkForPokemon = (callback) => {
   Pokemon.findAll({})
     .then((data) => {
       if (data.length < 150) {
-        console.log('NO POKEMON IN DB!');
+        console.log('There are less than 150 pokemon in the DB!');
         callback(false, savePokemon);
       } else {
-        console.log('POKEMON EXIST IN DB!');
+        console.log('All 150 pokemon are already in the DB!');
         callback(true)
       }
       // console.log('POKEMON EXIST IN DB')

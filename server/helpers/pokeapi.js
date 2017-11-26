@@ -1,16 +1,17 @@
 const axios = require('axios');
+const Promise = require('bluebird');
 
 
 
 const fetchFirst150Pokemon = (pokesExist, callback) => {  
   if(!pokesExist) {
     let arrayOfRequests = []
-    for(let i = 1; i <= 1; i++) {
+    for(let i = 1; i <= 5; i++) {
       arrayOfRequests.push(axios.get(`https://pokeapi.co/api/v2/pokemon/${i}/`));
       console.log('A REQUEST WITH ID: ', i);
     }
     console.log('IN FETCH, FETCHING POKES!');
-    axios.all(arrayOfRequests)
+    Promise.all(arrayOfRequests)
       .then((arrOfPromises) => {
         arrOfPromises.forEach((promise) => {
           console.log('FETCHING POKEMON WITH ID: ', promise.data.id);
