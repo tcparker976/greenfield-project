@@ -177,18 +177,18 @@ const modifierCalculation = (attackerTypes, moveType, opponentTypes) => {
 // reference: https://bulbapedia.bulbagarden.net/wiki/Damage 
 const damageCalculation = (activePlayer, opponent) => {
   
-  const attackerTypes = activePlayer.pokemon.types; 
+  const attackerTypes = activePlayer.pokemon[0].types; 
   let moveType; 
   attackerTypes.forEach(type => {
     if (type.slot == 1) {
       moveType = type.type.name 
     }
   }); 
-  const opponentTypes = opponent.pokemon.types.map(type => type.type.name);
+  const opponentTypes = opponent.pokemon[0].types.map(type => type.type.name);
   let modifier = modifierCalculation(attackerTypes, moveType, opponentTypes) 
 
-  const userAttackStat = activePlayer.pokemon.attack; 
-  const opponentDefenseStat = opponent.pokemon.defense;
+  const userAttackStat = activePlayer.pokemon[0].attack; 
+  const opponentDefenseStat = opponent.pokemon[0].defense;
   return {
     damageToBeDone: Math.round((((12 * 60 * (userAttackStat / opponentDefenseStat)) / 50) + 2) * modifier.modifierDamage),
     logStatement: modifier.logStatement

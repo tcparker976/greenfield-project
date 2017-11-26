@@ -3,6 +3,8 @@ import io from 'socket.io-client';
 import Chat from './Chat.jsx';
 import Terminal from './Terminal.jsx';
 import GameView from './GameView.jsx';
+import GameState from './GameState.jsx';
+import Logo from './Logo.jsx';
 import css from '../styles.css';
 
 export default class Game extends Component {
@@ -22,8 +24,7 @@ export default class Game extends Component {
       command: '',
       commandArray: [
         {
-          speaker: 'System',
-          command:`Let's get ready to battle!`
+          command: `Let's get ready to battle!`
         }
       ],
       socket: null,
@@ -187,7 +188,7 @@ export default class Game extends Component {
   renderGame() {
     if (!this.state.opponent) {
       return (
-        <div>
+        <div className={css.loading}>
           <h1>Awaiting opponent...</h1>
         </div>
       )
@@ -197,9 +198,29 @@ export default class Game extends Component {
     }
   }
 
+  renderSideBar() {
+    if (!this.state.opponent) {
+      return (
+        <div className={css.stateContainer}>
+          <Logo />
+          Awaiting...
+          <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
+        </div>
+      )
+    } else {
+      return (
+        <div className={css.stateContainer}>
+          <Logo />
+          <GameState pokemon={this.state.pokemon} />
+          <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
+        </div>
+      )
+    }
+  }
+
 
   render() {
-    const { players, spectators, gameOver } = this.state;
+    const { players, spectators, gameOver, pokemon } = this.state;
     console.log(this.state.pokemon);
     console.log(this.state.opponent);
     return (
@@ -208,7 +229,7 @@ export default class Game extends Component {
           {this.renderGame()}
           <Terminal commandArray={this.state.commandArray} commandInput={this.state.command} handleCommands={this.handleCommands} handleCommandChange={this.handleCommandChange} />
         </div>
-        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} />
+        {this.renderSideBar()}
       </div>
     )
   }

@@ -55,11 +55,20 @@ const createPokemon = (pokemon) => {
 }
 
 const createPlayer = (player, number) => {
-  const random = Math.ceil(Math.random() * 150); 
+  const random = () => {
+    return Math.ceil(Math.random() * 150)
+  }
   return new Promise((resolve, reject) => {
-    axios.get(`http://pokeapi.co/api/v2/pokemon/${random}`)
+    let pokemonCalls = [];
+    for (let i=0; i < 3; i++) {
+      pokemonCalls.push(axios.get(`http://pokeapi.co/api/v2/pokemon/${random()}`))
+    }
+    Promise.all(pokemonCalls)
     .then(results => {
-      const pokemon = createPokemon(results.data); 
+      let pokemon = []
+      results.forEach(result => {
+        pokemon.push(createPokemon(result.data)); 
+      });
       resolve({
         player: number,
         name: player.name,
@@ -68,6 +77,15 @@ const createPlayer = (player, number) => {
     })
     .catch(err => reject(err));  
   })
+}
+
+const createTurnlog = (game, turn) => {
+  const player = game.playerTurn;
+  const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
+  let turnlog = [{command: `${game[player].pokemon[0].name} attacked!`}];
+  turn.logStatement !== '' ? turnlog.push({command: turn.logStatement}) : null;
+  turnlog.push({command: `${game[opponent].pokemon[0].name} lost ${turn.damageToBeDone} HP`});
+  return turnlog;
 }
 
 
@@ -110,22 +128,12 @@ io.on('connection', (socket) => {
     const player = game.playerTurn;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
     const turnResults = damageCalculation(game[player], game[opponent]);
-    game[opponent].pokemon.health -= turnResults.damageToBeDone; 
-    console.log(turnResults);
+    game[opponent].pokemon[0].health -= turnResults.damageToBeDone;
+    const turnlog = createTurnlog(game, turnResults);  
     io.to(data.gameid).emit('attack processed', {
-      basicAttackDialog: [
-        {
-          command: `${game[player].pokemon.name} attacked!`
-        },
-        {
-          command: turnResults.logStatement
-        },
-        {
-          command: `${game[opponent].pokemon.name} lost ${turnResults.damageToBeDone} HP`
-        }
-      ]
+      basicAttackDialog: turnlog
     })
-    if (game[opponent].pokemon.health <= 0) {
+    if (game[opponent].pokemon[0].health <= 0) {
       io.to(data.gameid).emit('gameover', { name: game[player].name });
     } else {
       game.playerTurn = opponent;
