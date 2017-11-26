@@ -112,6 +112,23 @@ export default class Game extends Component {
         commandArray: this.state.commandArray.concat(data.basicAttackDialog)
       });
     })
+    socket.on('swap move', (data) => {
+      if (this.state.player1) {
+        this.setState(prevState => {
+          return {
+            pokemon: data.player1.pokemon,
+            opponent: data.player2,
+          }
+        });
+      } else {
+        this.setState(prevState => {
+          return {
+          pokemon: data.player2.pokemon,
+          opponent: data.player1,
+          }
+        })
+      }
+    });
     socket.on('turn move', (data) => {
       if (this.state.player1) {
         this.setState(prevState => {
@@ -175,6 +192,25 @@ export default class Game extends Component {
             name: this.state.name,
             pokemon: this.state.pokemon
           });
+        } else if (e.target.value.split(' ')[0] === "I" || e.target.value.split(' ')[0] === "i" && e.target.value.split(' ')[1] === "choose") {
+          let swap = e.target.value.split(' ')[3];
+          let isAvailable = false;
+          let index;
+          this.state.pokemon.forEach((poke, i) => {
+            if (poke.name === swap) {
+              isAvailable = true;
+              index = i;
+            }
+          });
+          if (isAvailable) {
+            this.state.socket.emit('switch', {
+              gameid: this.props.match.params.gameid,
+              pokemon: this.state.pokemon,
+              index
+            })
+          } else {
+            alert('you dont have that pokemon!');
+          }
         } else {
           alert('invalid input!')
         }
@@ -203,7 +239,7 @@ export default class Game extends Component {
       return (
         <div className={css.stateContainer}>
           <Logo />
-          Awaiting...
+          <GameState pokemon={[]} />
           <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
         </div>
       )
