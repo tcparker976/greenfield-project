@@ -62,6 +62,7 @@
   },
   "babel": {
     "presets": [
+      "react",
       "es2015"
     ]
   },
