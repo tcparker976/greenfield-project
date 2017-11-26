@@ -5,8 +5,8 @@
   "environments": {
     "test": {
       "scripts": {
-        "test-setup": "npm install supertest mocha chai",
-        "test": "mocha test --exit"
+        "test-setup": "npm install supertest mocha chai jest babel-jest babel-preset-react react-test-renderer",
+        "test": "jest & mocha test --exit"
       }
     }
   },
