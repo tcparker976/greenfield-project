@@ -7,6 +7,11 @@ import GameState from './GameState.jsx';
 import Logo from './Logo.jsx';
 import css from '../styles.css';
 
+const help = [{command: `Welcome to Chattermon. Chat your way to victory using these simple commands:`}]
+help.push({command: `"attack" : Attacks with your current active pokemon.`});
+help.push({command: `"choose <pokemon>" : Swaps your current pokemon with a currently available pokemon.`});
+help.push({command: `Have fun!`});
+
 export default class Game extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +21,7 @@ export default class Game extends Component {
       player2: false,
       messageArray: [],
       name: null,
-      pokemon: null,
+      pokemon: [],
       opponent: null,
       isActive: null,
       gameOver: false,
@@ -24,7 +29,7 @@ export default class Game extends Component {
       command: '',
       commandArray: [
         {
-          command: `Let's get ready to battle!`
+          command: `The game will begin shortly...type 'help' to learn how to play`
         }
       ],
       socket: null,
@@ -105,6 +110,9 @@ export default class Game extends Component {
           opponent: data.player1
         })
       }
+      this.setState({
+        commandArray: [{command: 'Let the battle begin!'}]
+      })
     });
     socket.on('attack processed', (data) => {
       this.setState(prevState => {
@@ -184,17 +192,25 @@ export default class Game extends Component {
 
   handleCommands(e) {
     if (e.keyCode === 13) {
-      if (!this.state.isActive) {
-        alert('it is not your turn!')
+      if (e.target.value === 'help') {
+        this.setState(prevState => {
+          return {
+            commandArray: prevState.commandArray.concat(help),
+            command: ''
+          }
+        });
       } else {
+        if (!this.state.isActive) {
+          alert('it is not your turn!')
+        } else {
         if (e.target.value === 'attack') {
           this.state.socket.emit('attack', {
             gameid: this.props.match.params.gameid,
             name: this.state.name,
             pokemon: this.state.pokemon
           });
-        } else if (e.target.value.split(' ')[0] === "I" || e.target.value.split(' ')[0] === "i" && e.target.value.split(' ')[1] === "choose") {
-          let swap = e.target.value.split(' ')[3];
+        } else if (e.target.value.split(' ')[0].toLowerCase() === "choose") {
+          let swap = e.target.value.split(' ')[1];
           let isAvailable = false;
           let index;
           this.state.pokemon.forEach((poke, i) => {
@@ -215,9 +231,10 @@ export default class Game extends Component {
         } else {
           alert('invalid input!')
         }
-        this.setState({
-          command: ''
-        });
+          this.setState({
+            command: ''
+          });
+        }
       }
     }
   }
@@ -236,23 +253,13 @@ export default class Game extends Component {
   }
 
   renderSideBar() {
-    if (!this.state.opponent) {
-      return (
-        <div className={css.stateContainer}>
-          <Logo />
-          <GameState pokemon={[]} />
-          <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
-        </div>
-      )
-    } else {
-      return (
-        <div className={css.stateContainer}>
-          <Logo />
-          <GameState pokemon={this.state.pokemon} />
-          <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
-        </div>
-      )
-    }
+    return (
+      <div className={css.stateContainer}>
+        <Logo name={this.state.name} isActive={this.state.isActive} opponent={this.state.opponent} />
+        <GameState pokemon={this.state.pokemon} />
+        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
+      </div>
+    );
   }
 
 
