@@ -3,17 +3,11 @@ const path = require('path');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-<<<<<<< HEAD
-const db = require('../database/db.js');
 const bodyParser = require('body-parser');
-const PokeApi = require('pokeapi');
-const api = PokeApi.v1();
-=======
 const Promise = require('bluebird');
 const axios = require('axios');
 
 const { calculateBaseHealth, calculateBaseStat, damageCalculation } = require('../game-logic.js');
->>>>>>> game logic plugged in and random pokemon being injected from API for now
 
 const dist = path.join(__dirname, '/../client/dist');
 
@@ -160,7 +154,6 @@ io.on('connection', (socket) => {
 
 });
 
-<<<<<<< HEAD
 app.post('/login', (req, resp) => {
   console.log('post request on /login');
   const username = req.body.username;
@@ -201,8 +194,6 @@ app.post('/signup', (req, resp) => {
   console.log(req.body);
 })
 
-=======
->>>>>>> game logic plugged in and random pokemon being injected from API for now
 // a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, res) => {
   res.sendFile(dist + '/index.html');
