@@ -239,6 +239,14 @@ app.post('/signup', (req, resp) => {
     });
 })
 
+app.get('/user', (req, resp) => {
+  console.log('on /isloggedin')
+  console.log(req.session);
+  const logged = JSON.stringify(req.session);
+  resp.writeHead(200, { "Content-Type": "text/plain" });
+  resp.end(logged);
+})
+
 app.get('/logout', (req, resp) => {
   req.session.destroy(err => {
     if (err) throw err;
@@ -248,14 +256,7 @@ app.get('/logout', (req, resp) => {
 });
 // a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, resp) => {
-  // if (req.session.loggedIn) {
-    console.log('should log in')
     resp.sendFile(dist + '/index.html');
-  // }
-  // else {
-  //   console.log('should redirect')
-  //   resp.redirect('/login');
-  // }
 });
 
 var port = process.env.PORT || 3000;
