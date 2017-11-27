@@ -165,6 +165,7 @@ app.post('/login', (req, resp) => {
   console.log('username', username);
   console.log('password', password);
   db.Users
+<<<<<<< HEAD
     .findOne({where: { username, password } })
     .then(user => {
       console.log('SERVER: /login found user =', user);
@@ -179,6 +180,37 @@ app.post('/login', (req, resp) => {
         resp.redirect('/');
       }
     })
+=======
+  .findOne({where: { username } })
+  .then(user => {
+    console.log('SERVER: /login found user =', user);
+    // finds user
+    // not found => end resp
+    // found => compare passwords
+    // don't match => end resp
+    // login
+    if (!user) {
+      console.log("redirecting to signup");
+      resp.writeHead(201, {'Content-Type': 'text/plain'});
+      resp.end('Username Not Found');
+    }
+    else {
+      const hash = user.dataValues.password;
+      return bcrypt.compare(password, hash)
+    }
+  })
+  .then(passwordsMatch => {
+    if (!passwordsMatch) {
+      resp.writeHead(201, {'Content-Type': 'text/plain'});
+      resp.end('Passwords Do Not Match');
+    } 
+    else {
+      req.session.username = username;
+      req.session.loggedIn = true;
+      resp.redirect('/');
+    }
+  })
+>>>>>>> can now log out
 })
 
 app.post('/signup', (req, resp) => {
@@ -207,9 +239,23 @@ app.post('/signup', (req, resp) => {
     });
 })
 
+app.get('/logout', (req, resp) => {
+  req.session.destroy(err => {
+    if (err) throw err;
+    console.log("LOGGING OUT")
+    resp.redirect('/login'); //Inside a callback… bulletproof!
+  });
+});
 // a catch-all route for BrowserRouter - enables direct linking to this point.
-app.get('/*', (req, res) => {
-  res.sendFile(dist + '/index.html');
+app.get('/*', (req, resp) => {
+  // if (req.session.loggedIn) {
+    console.log('should log in')
+    resp.sendFile(dist + '/index.html');
+  // }
+  // else {
+  //   console.log('should redirect')
+  //   resp.redirect('/login');
+  // }
 });
 
 var port = process.env.PORT || 3000;

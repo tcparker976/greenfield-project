@@ -120,7 +120,6 @@ export default class Signup extends Component {
           </div>
         </div>
 
-<<<<<<< HEAD
         <div className={css.contentSuperWrapper}>
           <div className={css.welcomeControlPannel}>
             <div className={css.welcomeMessage}>Sign Up</div>
@@ -137,11 +136,9 @@ export default class Signup extends Component {
             </div>
           </div>
         </div>
-=======
         <br/>
         <Link to='/login'><span>Login</span></Link>
         <button onClick={this.handleSubimt}>Signup</button>
->>>>>>> avoid duplicates
       </div>
     )
   }
