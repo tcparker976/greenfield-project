@@ -5,8 +5,6 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);  
 const db = require('../database/db.js');
 const bodyParser = require('body-parser');
-const PokeApi = require('pokeapi');
-const api = PokeApi.v1();
 const Promise = require('bluebird');
 const bcrypt = Promise.promisifyAll(require('bcrypt'));
 const saltRounds = 10;
@@ -14,9 +12,14 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
 const axios = require('axios');
-const { calculateBaseHealth, calculateBaseStat, damageCalculation } = require('../game-logic.js');
+const { createPokemon, createTurnlog, createPlayer } = require('./helpers/creators.js'); 
+const { damageCalculation } = require('../game-logic.js');
 
 const dist = path.join(__dirname, '/../client/dist');
+
+
+
+/* ======================== MIDDLEWARE ======================== */
 
 app.use(bodyParser());
 app.use(express.static(dist));
@@ -30,6 +33,9 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// ** Webpack middleware **
+// Note: Make sure while developing that bundle.js is NOT built - delete if it is in dist directory
 
 if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
@@ -45,65 +51,45 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
+/* =============================================================== */ 
+
+
+/* ======================== GAME STATE =========================== */
+
+/* The state of all games currently happening are saved in the 
+'games' object.
+
+The sample shape of a game is:
+
+  {
+    player1: object,
+    player2: object,
+    playerTurn: string ('player1' or 'player2')
+  }
+
+Refer to './helpers/creators.js' for more detail 
+on what is inside each player object
+
+*/
+
 const games = {};
 
-const createPokemon = (pokemon) => {
-  const { name, baseHealth, baseAttack, baseDefense, frontSprite, backSprite, types } = pokemon; 
-  return {
-    name,
-    health: baseHealth,
-    initialHealth: baseHealth,
-    attack: baseAttack,
-    defense: baseDefense,
-    sprites: {front_default: frontSprite, back_default: backSprite},
-    types
-  }
-}
+/* =============================================================== */ 
 
-const createPlayer = (player, number) => {
-  const random = () => {
-    return Math.ceil(Math.random() * 150)
-  }
-  return new Promise((resolve, reject) => {
-    let pokemonCalls = [];
-    for (let i=0; i < 3; i++) {
-      pokemonCalls.push(db.Pokemon.findOne({ where: { id: random() } }))
-    }
-    Promise.all(pokemonCalls)
-    .then(results => {
-      console.log(results);
-      let pokemon = []
-      results.forEach(result => {
-        pokemon.push(createPokemon(result)); 
-      });
-      resolve({
-        player: number,
-        name: player.name,
-        pokemon
-      })
-    })
-    .catch(err => reject(err));  
-  })
-}
 
-const createTurnlog = (game, turn, type) => {
-  const player = game.playerTurn;
-  const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
-  if (type === 'attack') {
-    let turnlog = [{command: `${game[player].pokemon[0].name} attacked!`}];
-    turn.logStatement !== '' ? turnlog.push({command: turn.logStatement}) : null;
-    turnlog.push({command: `${game[opponent].pokemon[0].name} lost ${turn.damageToBeDone} HP`});
-    return turnlog;
-  } else if (type === 'switch') {
-    let turnlog = [{command: `${game[player].pokemon[0].name} appears!`}];
-    return turnlog; 
-  }
-}
 
+/* =============== SOCKET CONNECTION / LOGIC ===================== */
 
 io.on('connection', (socket) => {
+  
+  /* socket.on('join game')
 
-  // on join game, initialize game in games object if it does not exist
+  The first check is to see if there is a game in the games object with this id, and if there is not, it initializes a new one with this new player.This means creating a new socket 'room' via socket.join() using the game's URL name. Once the player is created, update the game state and emit to player one ONLY that he / she is player1 by emitting directly to that socket id. 
+
+  If the game already exists but there is no player 2, it creates that player and first emits to that client directly that it is player2 as well as to the newly created room that the game is now ready, and it sends down the game's state to both clients to parse out and render. 
+
+  */ 
+
   socket.on('join game', (data) => {
     socket.join(data.gameid);
     if (!(data.gameid in games)) {
@@ -115,27 +101,31 @@ io.on('connection', (socket) => {
           playerTurn: 'player1'
         }
         io.to(socket.id).emit('player', player1);
-      })
-      } else if (data.gameid in games && !games[data.gameid].player2) {
-        createPlayer(data, 'player2')
-        .then(player2 => {
-          games[data.gameid].player2 = player2; 
-          console.log('finished creating player 2');          
-          io.to(socket.id).emit('player', player2);
-          io.to(data.gameid).emit('ready', games[data.gameid]);
-        })
-      } else {
+      });
+    } else if (data.gameid in games && !games[data.gameid].player2) {
+      createPlayer(data, 'player2')
+      .then(player2 => {
+        games[data.gameid].player2 = player2; 
+        io.to(socket.id).emit('player', player2);
+        io.to(data.gameid).emit('ready', games[data.gameid]);
+      });
+    } else {
         io.to(socket.id).emit('gamefull', 'this game is full!');
-      }
-    })
+    }
+  });
 
   socket.on('chat message', (data) => {
     console.log('chat data:', data);
     io.to(data.gameid).emit('chat message', data)
   });
 
+  /* socket.on('attack') / socket.on('switch')
+
+  These two functions both involve updating the game's state in some way and re-sending it back down to the client once it has been fully processed. Different events are emitted back to the client based on the state of the game, and can be extended to add more complexity into the game. 
+
+  */ 
+
   socket.on('attack', (data) => {
-    // find game to alter (gameid)
     const game = games[data.gameid];
     const player = game.playerTurn;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
@@ -167,6 +157,12 @@ io.on('connection', (socket) => {
   })
 
 });
+
+/* =============================================================== */
+
+
+/* =============== AUTHENTICATION ROUTES / LOGIC ================= */
+
 
 app.post('/login', (req, resp) => {
   console.log('post request on /login');
@@ -261,23 +257,15 @@ app.get('/logout', (req, resp) => {
     resp.redirect('/login'); //Inside a callback… bulletproof!
   });
 });
+
+/* =============================================================== */
+
+
 // a catch-all route for BrowserRouter - enables direct linking to this point.
+
 app.get('/*', (req, resp) => {
     resp.sendFile(dist + '/index.html');
 });
-
-
-// The following is an example case of using the pokeapi module
-// REF: https://www.npmjs.com/package/pokeapi
-
-// api.get('pokemon', 1).then(function(bulbasaur) {
-//     console.log("Here's Bulbasaur:", bulbasaur);
-//   api.get(bulbasaur.moves).then(function(moves) {
-//       console.log("Full move list:" + moves);
-//     })
-// }, function(err) {
-//     console.log('ERROR', err);
-// });
 
 
 var port = process.env.PORT || 3000;

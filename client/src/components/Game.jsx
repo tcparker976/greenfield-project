@@ -249,8 +249,6 @@ export default class Game extends Component {
 
   render() {
     const { players, spectators, gameOver, pokemon } = this.state;
-    console.log(this.state.pokemon);
-    console.log(this.state.opponent);
     return (
       <div className={css.gamePageContainer}>
         <div className={css.gameContainer}>
