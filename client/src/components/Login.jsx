@@ -102,7 +102,7 @@ export default class Login extends Component {
       }
 
       return (
-        <div>
+        <div className="fargo">
           <div className={css.navBar}>
             <div className={css.logo}>Chattermon</div>
             <div className={css.navBarLinksContainer}>
