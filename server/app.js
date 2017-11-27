@@ -221,8 +221,11 @@ app.post('/signup', (req, resp) => {
         req.login({ user_id: newuser.id }, err => {
             if (err) throw err;
             console.log("NEW USER ID:", newuser.id);
-            resp.writeHead(201, {'Content-Type': 'text/plain'});
-            resp.end('User Created');
+            req.session.username = username;
+            req.session.loggedIn = true;
+            let session = JSON.stringify(req.session);
+            resp.writeHead(201, {'Content-Type': 'app/json'});
+            resp.end(session);
           });
       }
       else if (newuser.match('Username Already Exists')) {

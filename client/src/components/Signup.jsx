@@ -48,19 +48,19 @@ export default class Signup extends Component {
       email: e.target.value
     });
   }
-  
+
   handlePasswordMatch(e) {
     const password = this.state.password;
     const repeat = e.target.value;
 
     this.setState({
       repeatPassword: repeat,
-      matchingPasswordError: password === repeat 
+      matchingPasswordError: password === repeat
         ? false
         : true
     });
   }
-  
+
   handleSubmit() {
     console.log('click\'d');
     const username = this.state.username;
@@ -79,7 +79,7 @@ export default class Signup extends Component {
       alert('Incorrect email format');
       return;
     }
-    
+
     axios({
         method: 'post',
         url: '/signup',
@@ -88,23 +88,26 @@ export default class Signup extends Component {
       })
       .then(resp => {
         console.log(resp.data)
-        if (resp.data.match('Email Already Exists')) {
+        if (typeof resp.data === 'string' && resp.data.match('Email Already Exists')) {
           alert('This email already exists, try again!');
         }
-        else if (resp.data.match('Username Already Exists')) {
+        else if (typeof resp.data === 'string' && resp.data.match('Username Already Exists')) {
           alert('This username already exists, try again!');
         }
         else {
-          alert('You have successfully created a user and can now login');
+          this.props.history.replace("/welcome");
         }
       })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
 
   render() {
     let usernameField = null;
     let emailField = null;
-    let passwordError = this.state.matchingPasswordError 
+    let passwordError = this.state.matchingPasswordError
     ? <div className={css.fieldErrorWrapper}>
         <div className={css.fieldErrorText}>Passwords are not the same</div>
       </div>
