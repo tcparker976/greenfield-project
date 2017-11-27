@@ -137,7 +137,8 @@ const modifierCalculation = (attackerTypes, moveType, opponentTypes) => {
   // let Burn = 1;  extra complexity we can add after MVP
   // let Weather = 1; extra EXTRA complexity, possibly after MVP
   let Critical = criticalChance();
-  let logStatement = '';
+  let logStatement = null;
+  let isCritical = null;
 
   if (Critical > 1) {
     logStatement += 'A critical hit! '
@@ -167,9 +168,14 @@ const modifierCalculation = (attackerTypes, moveType, opponentTypes) => {
     }
   }
 
+  if(Critical === 1.5) {
+    isCritical: 'A critical hit!'
+  }
+
   return {
     modifierDamage: STAB * Type * Critical,
-    logStatement
+    logStatement: logStatement,
+    isCritical: isCritical 
   }
 }
 
