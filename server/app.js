@@ -8,6 +8,8 @@ const axios = require('axios');
 const db = require('../database/db.js');
 const bodyParser = require('body-parser');
 const { calculateBaseHealth, calculateBaseStat, damageCalculation } = require('../game-logic.js');
+const pokeapi = require('./helpers/pokeapi.js');
+
 
 const dist = path.join(__dirname, '/../client/dist');
 
@@ -156,6 +158,8 @@ io.on('connection', (socket) => {
 });
 
 app.post('/login', (req, resp) => {
+  // db.checkForPokemon(pokeapi.fetchFirst150Pokemon); //uncomment this if you need to fill 
+                                                       //up the DB with pokemon everytime you press the login button.
   console.log('post request on /login');
   const username = req.body.username;
   const password = req.body.password;
@@ -184,7 +188,7 @@ app.post('/signup', (req, resp) => {
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
-  db.save(username, password, email)
+  db.saveUser(username, password, email)
     .then(newuser => {
       resp.writeHead(201, {'Content-Type': 'text/plain'});
       resp.end('User Created');
@@ -204,20 +208,6 @@ app.get('/user', (req, res) => {
 app.get('/*', (req, res) => {
   res.sendFile(dist + '/index.html');
 });
-
-
-// The following is an example case of using the pokeapi module
-// REF: https://www.npmjs.com/package/pokeapi
-
-// api.get('pokemon', 1).then(function(bulbasaur) {
-//     console.log("Here's Bulbasaur:", bulbasaur);
-//   api.get(bulbasaur.moves).then(function(moves) {
-//       console.log("Full move list:" + moves);
-//     })
-// }, function(err) {
-//     console.log('ERROR', err);
-// });
-
 
 var port = process.env.PORT || 3000;
 http.listen(port, function(){
