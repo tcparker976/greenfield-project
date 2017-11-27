@@ -118,6 +118,7 @@ const checkForPokemon = (callback) => {
 
 
 module.exports = {
+  connecttion: sequelize,
   saveUser: saveUser,
   Users: Users,
   Pokemon: Pokemon,

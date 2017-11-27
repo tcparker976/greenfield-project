@@ -216,7 +216,7 @@ app.post('/signup', (req, resp) => {
   const password = req.body.password;
   const email = req.body.email;
   bcrypt.hash(password, saltRounds)
-    .then(hash => db.save(username, hash, email))
+    .then(hash => db.saveUser(username, hash, email))
     .then(newuser => {
       console.log(newuser); 
       if (newuser.dataValues) {
