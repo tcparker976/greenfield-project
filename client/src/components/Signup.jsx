@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
-import css from '../styles.css';
-=======
 import validator from '../../../server/helpers/validator.js';
-
->>>>>>> avoid duplicates
+import css from '../styles.css';
 import axios from 'axios';
 
 export default class Signup extends Component {
@@ -15,15 +11,18 @@ export default class Signup extends Component {
     this.state = {
       username: '',
       password: '',
+      repeatPassword: '',
       email: '',
-      usernameUniqueError: true,
+      matchingPasswordError: false,
+      usernameUniqueError: false,
       emailUniqueError: false
     };
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubimt = this.handleSubimt.bind(this);
+    this.handlePasswordMatch = this.handlePasswordMatch.bind(this);
   }
 
   handleUsernameChange(e) {
@@ -49,8 +48,20 @@ export default class Signup extends Component {
       email: e.target.value
     });
   }
+  
+  handlePasswordMatch(e) {
+    const password = this.state.password;
+    const repeat = e.target.value;
 
-  handleSubmit() {
+    this.setState({
+      repeatPassword: repeat,
+      matchingPasswordError: password === repeat 
+        ? false
+        : true
+    });
+  }
+  
+  handleSubimt() {
     console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
@@ -60,10 +71,10 @@ export default class Signup extends Component {
       alert('Username should only conatain latin letters and/or numbers, and be from 8 to 20 characters long');
       return;
     }
-    else if (!password.match(validator.password)) {
-      alert('Password should contain at least one letter, number and special character, and be from 8 to 32 characters long');
-      return;
-    }
+    // else if (!password.match(validator.password)) {
+    //   alert('Password should contain at least one letter, number and special character, and be from 8 to 32 characters long');
+    //   return;
+    // }
     else if (!email.match(validator.email)) {
       alert('Incorrect email format');
       return;
@@ -89,9 +100,15 @@ export default class Signup extends Component {
       })
   }
 
+
   render() {
     let usernameField = null;
     let emailField = null;
+    let passwordError = this.state.matchingPasswordError 
+    ? <div className={css.fieldErrorWrapper}>
+        <div className={css.fieldErrorText}>Passwords are not the same</div>
+      </div>
+    : null;
 
     if (this.state.usernameUniqueError) {
       usernameField = <div className={css.fieldErrorWrapper}>
@@ -111,6 +128,7 @@ export default class Signup extends Component {
       emailField = <input type="text" className={css.signInUpField} placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}></input>
     }
 
+
     return (
       <div>
         <div className={css.navBar}>
@@ -119,7 +137,6 @@ export default class Signup extends Component {
             <div className={css.navBarLink}><Link to={'/login'} className={css.navBarLinkA}>Log In</Link></div>
           </div>
         </div>
-
         <div className={css.contentSuperWrapper}>
           <div className={css.welcomeControlPannel}>
             <div className={css.welcomeMessage}>Sign Up</div>
@@ -127,8 +144,10 @@ export default class Signup extends Component {
               <div className={css.joinGameContainer}>
                 {usernameField}
                 <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
+                {passwordError}
+                <input type="password" className={css.signInUpField} placeholder="Repeat Your Password" value={this.state.repeatPassword} onChange={this.handlePasswordMatch}></input>
                 {emailField}
-                <button className={css.gameButton} onClick={this.handleSubmit}>Sign Up</button>
+                <button className={css.gameButton} onClick={this.handleSubimt}>Sign Up</button>
               </div>
               <div className={css.seperator}></div>
               <div className={css.altAuthText}>Have an account?</div>
@@ -136,9 +155,6 @@ export default class Signup extends Component {
             </div>
           </div>
         </div>
-        <br/>
-        <Link to='/login'><span>Login</span></Link>
-        <button onClick={this.handleSubimt}>Signup</button>
       </div>
     )
   }
