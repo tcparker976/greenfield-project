@@ -249,9 +249,11 @@ passport.deserializeUser(function(user, done) {
 app.get('/user', (req, resp) => {
   console.log('on /isloggedin')
   console.log(req.session);
-  const logged = JSON.stringify(req.session);
-  resp.writeHead(200, { "Content-Type": "text/plain" });
-  resp.end(logged);
+  resp.writeHead(200, {"Content-Type": "application/json"});
+  resp.end(JSON.stringify({
+    username: req.session.username,
+    loggedIn: req.session.loggedIn
+  }));
 })
 
 app.get('/logout', (req, resp) => {
