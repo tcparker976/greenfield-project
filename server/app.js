@@ -34,18 +34,14 @@ if (process.env.NODE_ENV !== 'production') {
 const games = {};
 
 const createPokemon = (pokemon) => {
-  const { name, sprites } = pokemon; 
-  const health = calculateBaseHealth(pokemon.stats[5].base_stat);
-  const attack = calculateBaseStat(pokemon.stats[4].base_stat);
-  const defense = calculateBaseStat(pokemon.stats[3].base_stat);
-  const types = pokemon.types; 
+  const { name, baseHealth, baseAttack, baseDefense, frontSprite, backSprite, types } = pokemon; 
   return {
     name,
-    health,
-    initialHealth: health,
-    attack,
-    defense,
-    sprites,
+    health: baseHealth,
+    initialHealth: baseHealth,
+    attack: baseAttack,
+    defense: baseDefense,
+    sprites: {front_default: frontSprite, back_default: backSprite},
     types
   }
 }
@@ -57,13 +53,14 @@ const createPlayer = (player, number) => {
   return new Promise((resolve, reject) => {
     let pokemonCalls = [];
     for (let i=0; i < 3; i++) {
-      pokemonCalls.push(axios.get(`http://pokeapi.co/api/v2/pokemon/${random()}`))
+      pokemonCalls.push(db.Pokemon.findOne({ where: { id: random() } }))
     }
     Promise.all(pokemonCalls)
     .then(results => {
+      console.log(results);
       let pokemon = []
       results.forEach(result => {
-        pokemon.push(createPokemon(result.data)); 
+        pokemon.push(createPokemon(result)); 
       });
       resolve({
         player: number,
@@ -84,7 +81,7 @@ const createTurnlog = (game, turn, type) => {
     turnlog.push({command: `${game[opponent].pokemon[0].name} lost ${turn.damageToBeDone} HP`});
     return turnlog;
   } else if (type === 'switch') {
-    let turnlog =[{command: `${game[player].pokemon[0].name} appears!`}];
+    let turnlog = [{command: `${game[player].pokemon[0].name} appears!`}];
     return turnlog; 
   }
 }
@@ -148,10 +145,11 @@ io.on('connection', (socket) => {
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1';
     game[player].pokemon.unshift(game[player].pokemon.splice(data.index, 1)[0]); 
     const turnlog = createTurnlog(game, null, 'switch');
+    game.playerTurn = opponent;
     io.to(data.gameid).emit('attack processed', {
       basicAttackDialog: turnlog
     });
-    io.to(data.gameid).emit('swap move', game);
+    io.to(data.gameid).emit('turn move', game);
   })
 
 });
