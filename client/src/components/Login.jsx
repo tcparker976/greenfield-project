@@ -17,7 +17,7 @@ export default class Login extends Component {
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleSubimt = this.handleSubimt.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleUsernameChange(e) {
@@ -36,7 +36,7 @@ export default class Login extends Component {
     });
   }
 
-  handleSubimt() {
+  handleSubmit() {
     console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
@@ -119,7 +119,7 @@ export default class Login extends Component {
                   <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input> */}
                   {usernameField}
                   {passwordField}
-                  <button className={css.gameButton} onClick={this.handleSubimt}>Login</button>
+                  <button className={css.gameButton} onClick={this.handleSubmit}>Login</button>
                 </div>
                 <div className={css.seperator}></div>
                 <div className={css.altAuthText}>New here?</div>

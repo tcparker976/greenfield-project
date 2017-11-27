@@ -21,7 +21,7 @@ export default class Signup extends Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleSubimt = this.handleSubimt.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePasswordMatch = this.handlePasswordMatch.bind(this);
   }
 
@@ -61,7 +61,7 @@ export default class Signup extends Component {
     });
   }
   
-  handleSubimt() {
+  handleSubmit() {
     console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
@@ -147,7 +147,7 @@ export default class Signup extends Component {
                 {passwordError}
                 <input type="password" className={css.signInUpField} placeholder="Repeat Your Password" value={this.state.repeatPassword} onChange={this.handlePasswordMatch}></input>
                 {emailField}
-                <button className={css.gameButton} onClick={this.handleSubimt}>Sign Up</button>
+                <button className={css.gameButton} onClick={this.handleSubmit}>Sign Up</button>
               </div>
               <div className={css.seperator}></div>
               <div className={css.altAuthText}>Have an account?</div>
