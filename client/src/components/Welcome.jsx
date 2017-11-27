@@ -1,3 +1,10 @@
+// Welcome.jsx
+// Home screen for logged in user that creates new session or joins existing
+// On componentDidMount, a potentiall newGameId is created for linking to. Going to an unused gameId url will start a new game
+// handleRoomInputReturn sees if you hit enter on the join game field to take you there, but it doesn't actually work... but maybe you can fix it!
+// handleRoomInputChange keeps track of what is in the input field
+// The join game button is setup to swap based on your input in the join field. If nothing is in the join field, well nothing is going to happen
+
 import React, { Component } from 'react';
 import { Link, Route, Redirect } from 'react-router-dom';
 import css from '../styles.css';
@@ -26,15 +33,6 @@ export default class Welcome extends Component {
     this.setState({
       newGameId: makeGameId()
     })
-  }
-
-  makeGameId() {
-    var newGameId = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-    for (var i = 0; i < 5; i++)
-      newGameRoomId += possible.charAt(Math.floor(Math.random() * possible.length));
-    return newGameId;
   }
 
   handleRoomInputReturn(e) {
