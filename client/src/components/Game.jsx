@@ -103,47 +103,35 @@ export default class Game extends Component {
   }
 
   componentDidMount() {
-    function makeid() {
-      var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-      for (var i = 0; i < 5; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-      return text;
-    }
-
-  // it's just a little more readable during testing
-    function makeHumanId() {
-      var text = "";
-      var names = ['chris-', 'david-', 'james-', 'thomas-', 'anthony-', 'fred-']
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-      for (var i = 0; i < 3; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-      return names[Math.floor(Math.random() * names.length)] + text;
-    }
-
-    const name = makeHumanId();
-    var socket = io();
-    this.setState({
-      name,
-      socket
-    })
-    const playerInit = {
-      gameid: this.props.match.params.gameid,
-      name,
-      pokemon: this.state.pokemon
-    }
-    socket.emit('join game', playerInit);
-    socket.on('gamefull', message => alert(message)); 
-    socket.on('chat message', this.socketHandlers().handleChat); 
-    socket.on('player', this.socketHandlers().playerInitialized); 
-    socket.on('ready', this.socketHandlers().handleReady); 
-    socket.on('attack processed', this.socketHandlers().attackProcess); 
-    socket.on('turn move', this.socketHandlers().turnMove);
-    socket.on('gameover', data => alert(data.name + ' wins!!')); 
+    axios('/user')
+      .then(({ data }) => {
+        console.log("USERITO USERITO USERITO")
+        console.log(data)
+        if (data.username) {
+          const username = data.username;
+          var socket = io();
+          this.setState({
+            name: username,
+            socket
+          })
+          const playerInit = {
+            gameid: this.props.match.params.gameid,
+            name: username,
+            pokemon: this.state.pokemon
+          }
+          socket.emit('join game', playerInit);
+          socket.on('gamefull', message => alert(message)); 
+          socket.on('chat message', this.socketHandlers().handleChat); 
+          socket.on('player', this.socketHandlers().playerInitialized); 
+          socket.on('ready', this.socketHandlers().handleReady); 
+          socket.on('attack processed', this.socketHandlers().attackProcess); 
+          socket.on('turn move', this.socketHandlers().turnMove);
+          socket.on('gameover', data => alert(data.name + ' wins!!')); 
+        }
+        else {
+          this.props.history.replace("/login");
+        }
+      })
   }
 
   handleChatInputChange(e) {
