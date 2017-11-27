@@ -17,7 +17,7 @@ export default class Login extends Component {
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubimt = this.handleSubimt.bind(this);
   }
 
   handleUsernameChange(e) {
@@ -36,7 +36,7 @@ export default class Login extends Component {
     });
   }
 
-  handleSubmit() {
+  handleSubimt() {
     console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
@@ -47,12 +47,19 @@ export default class Login extends Component {
         data: { username, password }
       })
       .then(resp => {
-        if (resp.data.match('Not Found')) {
-          console.log("user not found");
+        if (resp.data.match('Username Not Found')) {
+          console.log('Username Not Found');
           this.setState({
-            registered: false
+            usernameError: true
           });
-        } else {
+        } 
+        else if (resp.data.match('Passwords Do Not Match')) {
+          console.log('Passwords Do Not Match');
+          this.setState({
+            passwordError: true
+          });
+        }
+        else {
           console.log("user found");
           this.setState({
             registered: true
@@ -112,7 +119,7 @@ export default class Login extends Component {
                   <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input> */}
                   {usernameField}
                   {passwordField}
-                  <button className={css.gameButton} onClick={this.handleSubmit}>Login</button>
+                  <button className={css.gameButton} onClick={this.handleSubimt}>Login</button>
                 </div>
                 <div className={css.seperator}></div>
                 <div className={css.altAuthText}>New here?</div>

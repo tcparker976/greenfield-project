@@ -2,20 +2,34 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const Promise = require('bluebird');
-const axios = require('axios');
+const io = require('socket.io')(http);  
 const db = require('../database/db.js');
 const bodyParser = require('body-parser');
+const PokeApi = require('pokeapi');
+const api = PokeApi.v1();
+const Promise = require('bluebird');
+const bcrypt = Promise.promisifyAll(require('bcrypt'));
+const saltRounds = 10;
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const passport = require('passport');
+const axios = require('axios');
 const { calculateBaseHealth, calculateBaseStat, damageCalculation } = require('../game-logic.js');
-const pokeapi = require('./helpers/pokeapi.js');
-
 
 const dist = path.join(__dirname, '/../client/dist');
 
 app.use(bodyParser());
 app.use(express.static(dist));
 
+app.use(cookieParser());
+app.use(session({
+  secret: 'odajs2iqw9asjxzascatsas22',
+  resave: false,
+  saveUninitialized: false,
+  // cookie: { secure: true },
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
@@ -155,29 +169,43 @@ io.on('connection', (socket) => {
 });
 
 app.post('/login', (req, resp) => {
-  // db.checkForPokemon(pokeapi.fetchFirst150Pokemon); //uncomment this if you need to fill 
-                                                       //up the DB with pokemon everytime you press the login button.
   console.log('post request on /login');
   const username = req.body.username;
   const password = req.body.password;
+
+  
   console.log('username', username);
   console.log('password', password);
   db.Users
-    .findOne({where: { username, password } })
-    .then(user => {
-      console.log('SERVER: /login found user =', user);
-      // console.log('use')
-      if (!user) {
-        console.log("redirecting to signup");
-        resp.writeHead(201, {'Content-Type': 'text/plain'});
-        resp.end('Not Found');
-      }
-
-      else {
-        console.log("redirecting to home");
-        resp.redirect('/');
-      }
-    })
+  .findOne({where: { username } })
+  .then(user => {
+    console.log('SERVER: /login found user =', user);
+    // finds user
+    // not found => end resp
+    // found => compare passwords
+    // don't match => end resp
+    // login
+    if (!user) {
+      console.log("redirecting to signup");
+      resp.writeHead(201, {'Content-Type': 'text/plain'});
+      resp.end('Username Not Found');
+    }
+    else {
+      const hash = user.dataValues.password;
+      return bcrypt.compare(password, hash)
+    }
+  })
+  .then(passwordsMatch => {
+    if (!passwordsMatch) {
+      resp.writeHead(201, {'Content-Type': 'text/plain'});
+      resp.end('Passwords Do Not Match');
+    } 
+    else {
+      req.session.username = username;
+      req.session.loggedIn = true;
+      resp.redirect('/');
+    }
+  })
 })
 
 app.post('/signup', (req, resp) => {
@@ -185,21 +213,72 @@ app.post('/signup', (req, resp) => {
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
-  db.saveUser(username, password, email)
+  bcrypt.hash(password, saltRounds)
+    .then(hash => db.saveUser(username, hash, email))
     .then(newuser => {
-      resp.writeHead(201, {'Content-Type': 'text/plain'});
-      resp.end('User Created');
+      console.log(newuser); 
+      if (newuser.dataValues) {
+        req.login({ user_id: newuser.id }, err => {
+            if (err) throw err;
+            console.log("NEW USER ID:", newuser.id);
+            resp.writeHead(201, {'Content-Type': 'text/plain'});
+            resp.end('User Created');
+          });
+      }
+      else if (newuser.match('Username Already Exists')) {
+        resp.writeHead(201, {'Content-Type': 'text/plain'});
+        resp.end('Username Already Exists');
+      }
+      else if (newuser.match('Email Already Exists')) {
+        resp.writeHead(201, {'Content-Type': 'text/plain'});
+        resp.end('Email Already Exists');
+      }
     })
     .catch(err => {
       throw new Error(err)
     });
-  console.log(req.body);
+})
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+app.get('/user', (req, resp) => {
+  console.log('on /isloggedin')
+  console.log(req.session);
+  const logged = JSON.stringify(req.session);
+  resp.writeHead(200, { "Content-Type": "text/plain" });
+  resp.end(logged);
 })
 
-// a catch-all route for BrowserRouter - enables direct linking to this point.
-app.get('/*', (req, res) => {
-  res.sendFile(dist + '/index.html');
+app.get('/logout', (req, resp) => {
+  req.session.destroy(err => {
+    if (err) throw err;
+    console.log("LOGGING OUT")
+    resp.redirect('/login'); //Inside a callback… bulletproof!
+  });
 });
+// a catch-all route for BrowserRouter - enables direct linking to this point.
+app.get('/*', (req, resp) => {
+    resp.sendFile(dist + '/index.html');
+});
+
+
+// The following is an example case of using the pokeapi module
+// REF: https://www.npmjs.com/package/pokeapi
+
+// api.get('pokemon', 1).then(function(bulbasaur) {
+//     console.log("Here's Bulbasaur:", bulbasaur);
+//   api.get(bulbasaur.moves).then(function(moves) {
+//       console.log("Full move list:" + moves);
+//     })
+// }, function(err) {
+//     console.log('ERROR', err);
+// });
+
 
 var port = process.env.PORT || 3000;
 http.listen(port, function(){
