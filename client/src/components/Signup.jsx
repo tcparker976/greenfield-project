@@ -21,8 +21,21 @@ export default class Signup extends Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleSubimt = this.handleSubimt.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePasswordMatch = this.handlePasswordMatch.bind(this);
+  }
+
+  componentWillMount() {
+    axios('/user')
+    .then(({ data }) => {
+      if (data.username) {
+        const username = data.username;
+        this.setState({
+          name: username
+        });
+        this.props.history.replace("/welcome");
+      }
+    });
   }
 
   handleUsernameChange(e) {
@@ -48,20 +61,20 @@ export default class Signup extends Component {
       email: e.target.value
     });
   }
-  
+
   handlePasswordMatch(e) {
     const password = this.state.password;
     const repeat = e.target.value;
 
     this.setState({
       repeatPassword: repeat,
-      matchingPasswordError: password === repeat 
+      matchingPasswordError: password === repeat
         ? false
         : true
     });
   }
-  
-  handleSubimt() {
+
+  handleSubmit() {
     console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
@@ -79,7 +92,7 @@ export default class Signup extends Component {
       alert('Incorrect email format');
       return;
     }
-    
+
     axios({
         method: 'post',
         url: '/signup',
@@ -88,23 +101,26 @@ export default class Signup extends Component {
       })
       .then(resp => {
         console.log(resp.data)
-        if (resp.data.match('Email Already Exists')) {
+        if (typeof resp.data === 'string' && resp.data.match('Email Already Exists')) {
           alert('This email already exists, try again!');
         }
-        else if (resp.data.match('Username Already Exists')) {
+        else if (typeof resp.data === 'string' && resp.data.match('Username Already Exists')) {
           alert('This username already exists, try again!');
         }
         else {
-          alert('You have successfully created a user and can now login');
+          this.props.history.replace("/welcome");
         }
       })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
 
   render() {
     let usernameField = null;
     let emailField = null;
-    let passwordError = this.state.matchingPasswordError 
+    let passwordError = this.state.matchingPasswordError
     ? <div className={css.fieldErrorWrapper}>
         <div className={css.fieldErrorText}>Passwords are not the same</div>
       </div>
@@ -147,7 +163,7 @@ export default class Signup extends Component {
                 {passwordError}
                 <input type="password" className={css.signInUpField} placeholder="Repeat Your Password" value={this.state.repeatPassword} onChange={this.handlePasswordMatch}></input>
                 {emailField}
-                <button className={css.gameButton} onClick={this.handleSubimt}>Sign Up</button>
+                <button className={css.gameButton} onClick={this.handleSubmit}>Sign Up</button>
               </div>
               <div className={css.seperator}></div>
               <div className={css.altAuthText}>Have an account?</div>
