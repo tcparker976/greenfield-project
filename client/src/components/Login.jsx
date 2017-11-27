@@ -20,6 +20,19 @@ export default class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentWillMount() {
+    axios('/user')
+    .then(({ data }) => {
+      if (data.username) {
+        const username = data.username;
+        this.setState({
+          name: username
+        });
+        this.props.history.replace("/welcome");
+      }
+    });
+  }
+
   handleUsernameChange(e) {
     console.log('Username changed to', e.target.value);
 
