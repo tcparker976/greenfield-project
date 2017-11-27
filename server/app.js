@@ -34,18 +34,14 @@ if (process.env.NODE_ENV !== 'production') {
 const games = {};
 
 const createPokemon = (pokemon) => {
-  const { name, sprites } = pokemon; 
-  const health = calculateBaseHealth(pokemon.stats[5].base_stat);
-  const attack = calculateBaseStat(pokemon.stats[4].base_stat);
-  const defense = calculateBaseStat(pokemon.stats[3].base_stat);
-  const types = pokemon.types; 
+  const { name, baseHealth, baseAttack, baseDefense, frontSprite, backSprite, types } = pokemon; 
   return {
     name,
-    health,
-    initialHealth: health,
-    attack,
-    defense,
-    sprites,
+    health: baseHealth,
+    initialHealth: baseHealth,
+    attack: baseAttack,
+    defense: baseDefense,
+    sprites: {front_default: frontSprite, back_default: backSprite},
     types
   }
 }
@@ -57,13 +53,14 @@ const createPlayer = (player, number) => {
   return new Promise((resolve, reject) => {
     let pokemonCalls = [];
     for (let i=0; i < 3; i++) {
-      pokemonCalls.push(axios.get(`http://pokeapi.co/api/v2/pokemon/${random()}`))
+      pokemonCalls.push(db.Pokemon.findOne({ where: { id: random() } }))
     }
     Promise.all(pokemonCalls)
     .then(results => {
+      console.log(results);
       let pokemon = []
       results.forEach(result => {
-        pokemon.push(createPokemon(result.data)); 
+        pokemon.push(createPokemon(result)); 
       });
       resolve({
         player: number,
@@ -198,11 +195,6 @@ app.post('/signup', (req, resp) => {
     });
   console.log(req.body);
 })
-
-app.get('/user', (req, res) => {
-  console.log('inside of user');
-  res.redirect('/login'); 
-});
 
 // a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, res) => {
