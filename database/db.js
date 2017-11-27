@@ -93,20 +93,6 @@ const savePokemon = (pokemonObj) => {
   });
 }
 
-const checkForPokemon = (callback) => {
-  Pokemon.findAll({})
-    .then((data) => {
-      if (data.length < 151) {
-        console.log('There are less than 151 pokemon in the DB!');
-        console.log('NUMBER POKES IN DB: ', data.length);
-        // callback(false, savePokemon);  //uncomment this if you need to save pokemon in the db --> refer to pokeapi.js
-      } else {
-        console.log('All 151 pokemon are already in the DB!');
-        console.log('NUMBER POKES IN DB: ', data.length)
-      }
-    })
-  }
-
 // Users
 
 //   .findAll()
@@ -121,8 +107,7 @@ module.exports = {
   connecttion: sequelize,
   saveUser: saveUser,
   Users: Users,
-  Pokemon: Pokemon,
-  checkForPokemon: checkForPokemon
+  Pokemon: Pokemon
 }
 
 // POSTGRES WITHOUT SEQUELIZE
