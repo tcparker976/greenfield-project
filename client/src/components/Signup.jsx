@@ -18,7 +18,7 @@ export default class Signup extends Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleSubimt = this.handleSubimt.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleUsernameChange(e) {
@@ -45,20 +45,8 @@ export default class Signup extends Component {
     });
   }
 
-  handleSubimt() {
-   console.log('click\'d');
-
-    axios({
-      method: 'post',
-      url: '/',
-      baseUrl: process.env.baseURL || 'http://localhost:3000',
-    })
-      .then(function(response) {
-        console.log('AXIOS WORKED?')
-      // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-    });
-
-    
+  handleSubmit() {
+    console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
     const email = this.state.email;
@@ -109,7 +97,7 @@ export default class Signup extends Component {
                 {usernameField}
                 <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input>
                 {emailField}
-                <button className={css.gameButton} onClick={this.handleSubimt}>Sign Up</button>
+                <button className={css.gameButton} onClick={this.handleSubmit}>Sign Up</button>
               </div>
               <div className={css.seperator}></div>
               <div className={css.altAuthText}>Have an account?</div>

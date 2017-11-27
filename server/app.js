@@ -160,7 +160,6 @@ app.post('/login', (req, resp) => {
   // db.checkForPokemon(pokeapi.fetchFirst150Pokemon); //uncomment this if you need to fill 
                                                        //up the DB with pokemon everytime you press the login button.
   console.log('post request on /login');
-  db.checkForPokemon(pokeapi.fetchFirst150Pokemon);
   const username = req.body.username;
   const password = req.body.password;
   console.log('username', username);
