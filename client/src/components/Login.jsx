@@ -17,7 +17,20 @@ export default class Login extends Component {
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleSubimt = this.handleSubimt.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentWillMount() {
+    axios('/user')
+    .then(({ data }) => {
+      if (data.username) {
+        const username = data.username;
+        this.setState({
+          name: username
+        });
+        this.props.history.replace("/welcome");
+      }
+    });
   }
 
   handleUsernameChange(e) {
@@ -36,7 +49,7 @@ export default class Login extends Component {
     });
   }
 
-  handleSubimt() {
+  handleSubmit() {
     console.log('click\'d');
     const username = this.state.username;
     const password = this.state.password;
@@ -52,7 +65,7 @@ export default class Login extends Component {
           this.setState({
             usernameError: true
           });
-        } 
+        }
         else if (resp.data.match('Passwords Do Not Match')) {
           console.log('Passwords Do Not Match');
           this.setState({
@@ -76,7 +89,7 @@ export default class Login extends Component {
     }
     else if (this.state.registered === true) {
       return (
-        <Redirect to="/home"/>
+        <Redirect to="/welcome"/>
       )
     }
     else {
@@ -119,7 +132,7 @@ export default class Login extends Component {
                   <input type="password" className={css.signInUpField} placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}></input> */}
                   {usernameField}
                   {passwordField}
-                  <button className={css.gameButton} onClick={this.handleSubimt}>Login</button>
+                  <button className={css.gameButton} onClick={this.handleSubmit}>Login</button>
                 </div>
                 <div className={css.seperator}></div>
                 <div className={css.altAuthText}>New here?</div>
