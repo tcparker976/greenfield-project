@@ -80,3 +80,4 @@ describe('Log statement from a damage calculation', function() {
   })
 })
 
+
