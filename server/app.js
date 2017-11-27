@@ -115,7 +115,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('chat message', (data) => {
-    console.log('chat data:', data);
     io.to(data.gameid).emit('chat message', data)
   });
 
@@ -135,8 +134,18 @@ io.on('connection', (socket) => {
     io.to(data.gameid).emit('attack processed', {
       basicAttackDialog: turnlog
     })
-    if (game[opponent].pokemon[0].health <= 0) {
+    if (
+      game[opponent].pokemon[0].health <= 0 && 
+      game[opponent].pokemon[1].health <= 0 && 
+      game[opponent].pokemon[2].health <= 0
+    ) {
+      game[opponent].pokemon[0].health = 0; 
+      io.to(data.gameid).emit('turn move', game);      
       io.to(data.gameid).emit('gameover', { name: game[player].name });
+    } else if (game[opponent].pokemon[0].health <= 0) {
+      game[opponent].pokemon[0].health = 0; 
+      game.playerTurn = opponent;
+      io.to(data.gameid).emit('turn move', game);    
     } else {
       game.playerTurn = opponent;
       io.to(data.gameid).emit('turn move', game);
@@ -175,14 +184,12 @@ app.post('/login', (req, resp) => {
   db.Users
   .findOne({where: { username } })
   .then(user => {
-    console.log('SERVER: /login found user =', user);
     // finds user
     // not found => end resp
     // found => compare passwords
     // don't match => end resp
     // login
     if (!user) {
-      console.log("redirecting to signup");
       resp.writeHead(201, {'Content-Type': 'text/plain'});
       resp.end('Username Not Found');
     }
@@ -212,7 +219,6 @@ app.post('/signup', (req, resp) => {
   bcrypt.hash(password, saltRounds)
     .then(hash => db.saveUser(username, hash, email))
     .then(newuser => {
-      console.log(newuser); 
       if (newuser.dataValues) {
         req.login({ user_id: newuser.id }, err => {
             if (err) throw err;
@@ -243,9 +249,6 @@ passport.deserializeUser(function(user, done) {
 });
 
 app.get('/user', (req, resp) => {
-  console.log('on /isloggedin')
-  console.log(req.session);
-  resp.writeHead(200, {"Content-Type": "application/json"});
   resp.end(JSON.stringify({
     username: req.session.username,
     loggedIn: req.session.loggedIn
@@ -255,8 +258,7 @@ app.get('/user', (req, resp) => {
 app.get('/logout', (req, resp) => {
   req.session.destroy(err => {
     if (err) throw err;
-    console.log("LOGGING OUT")
-    resp.redirect('/login'); //Inside a callback… bulletproof!
+    resp.redirect('/login');
   });
 });
 

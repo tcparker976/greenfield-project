@@ -59,6 +59,9 @@ const createTurnlog = (game, turn, type) => {
     let turnlog = [{command: `${game[player].pokemon[0].name} attacked!`}];
     turn.logStatement !== '' ? turnlog.push({command: turn.logStatement}) : null;
     turnlog.push({command: `${game[opponent].pokemon[0].name} lost ${turn.damageToBeDone} HP`});
+    if (game[opponent].pokemon[0].health <= 0) {
+      turnlog.push({command: `${game[opponent].pokemon[0].name} has fainted!`}); 
+    }
     return turnlog;
   } else if (type === 'switch') {
     let turnlog = [{command: `${game[player].pokemon[0].name} appears!`}];
