@@ -1,15 +1,20 @@
+// README :The following was used to fill up our pokemon table in our postgres database with shaped data from the pokeapi.
+// You will have to decide when and where to call this if your database is in need of persistant pokemon data.
+//1) fetchFirst151Pokemon:
+//  Use this function to fill up the database with a number of pokemon from the pokeapi in conjuction with savePokemon function in db.js
+//  Things to consider:
+//    -More than 10 requests to the pokeapi with result in a 504 timeout error (per my experience).
+//    -I filled the DB by manually calling this function, each time making only 10 requests (refactor to recursive or setTimeout if needed).
+//    -You should only need to fill up your DB with all the pokemon you plan to incorporate once. 
+//    -The api is free to use but only 300 requests per resource per day are permitted e.g. bulbasaur can be requested 300 times per day.
+//2) checkForPokemon:
+//     a function that checks how many pokemon rows are in the pokemon table. If there are less rows than the number
+//     of pokemon (in this case, less that the original 151 pokemon we wanted), then it excutes a callback i.e. fetchFirst151Pokemon.
 const axios = require('axios');
 const Promise = require('bluebird');
 const db = '../../database/db.js';
 
-
-//Use this function to fill up the database with any number of pokemon from the pokeapi
-//Things to consider:
-//  -More than 10 requests to the pokeapi with result in a 504 timeout error (per my experience).
-//  -I filled the DB by manually calling this function, each time making only 10 requests (refactor to recursive or setTimeout).
-//  -You should only need to fill up your DB with all the pokemon you plan to incorporate once. 
-//  -The api is free to use but only 300 requests per resource per day are permitted e.g. bulbasaur can be requested 300 times per day.
-const fetchFirst150Pokemon = (pokesExist, callback) => {  
+const fetchFirst151Pokemon = (pokesExist, callback) => {  
   if(!pokesExist) {
     let arrayOfRequests = []
     //you WILL get a 504 error if you try and request a large chunk. I did increments of 10.
@@ -49,6 +54,22 @@ const fetchFirst150Pokemon = (pokesExist, callback) => {
   }    
 }
 
+
+const checkForPokemon = (callback) => {
+  Pokemon.findAll({})
+    .then((data) => {
+      if (data.length < 151) {
+        console.log('There are less than 151 pokemon in the DB!');
+        console.log('NUMBER POKES IN DB: ', data.length);
+        callback(false, db.savePokemon);  //uncomment this if you need to save pokemon in the db --> refer to pokeapi.js
+      } else {
+        console.log('All 151 pokemon are already in the DB!');
+        console.log('NUMBER POKES IN DB: ', data.length)
+      }
+    })
+  }
+
 module.exports = {
-  fetchFirst150Pokemon: fetchFirst150Pokemon
+  fetchFirst151Pokemon: fetchFirst151Pokemon,
+  checkForPokemon: checkForPokemon
 }
