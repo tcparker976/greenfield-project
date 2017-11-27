@@ -82,7 +82,7 @@ const createTurnlog = (game, turn, type) => {
     turnlog.push({command: `${game[opponent].pokemon[0].name} lost ${turn.damageToBeDone} HP`});
     return turnlog;
   } else if (type === 'switch') {
-    let turnlog =[{command: `${game[player].pokemon[0].name} appears!`}];
+    let turnlog = [{command: `${game[player].pokemon[0].name} appears!`}];
     return turnlog; 
   }
 }
@@ -146,10 +146,11 @@ io.on('connection', (socket) => {
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1';
     game[player].pokemon.unshift(game[player].pokemon.splice(data.index, 1)[0]); 
     const turnlog = createTurnlog(game, null, 'switch');
+    game.playerTurn = opponent;
     io.to(data.gameid).emit('attack processed', {
       basicAttackDialog: turnlog
     });
-    io.to(data.gameid).emit('swap move', game);
+    io.to(data.gameid).emit('turn move', game);
   })
 
 });
@@ -193,6 +194,11 @@ app.post('/signup', (req, resp) => {
     });
   console.log(req.body);
 })
+
+app.get('/user', (req, res) => {
+  console.log('inside of user');
+  res.redirect('/login'); 
+});
 
 // a catch-all route for BrowserRouter - enables direct linking to this point.
 app.get('/*', (req, res) => {

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import io from 'socket.io-client';
+import Home from './Home.jsx';
+import Login from './Login.jsx';
 import Chat from './Chat.jsx';
 import Terminal from './Terminal.jsx';
 import GameView from './GameView.jsx';
@@ -7,10 +10,7 @@ import GameState from './GameState.jsx';
 import Logo from './Logo.jsx';
 import css from '../styles.css';
 
-const help = [{command: `Welcome to Chattermon. Chat your way to victory using these simple commands:`}]
-help.push({command: `"attack" : Attacks with your current active pokemon.`});
-help.push({command: `"choose <pokemon>" : Swaps your current pokemon with a currently available pokemon.`});
-help.push({command: `Have fun!`});
+import help from './../../../utils/helpers.js'
 
 export default class Game extends Component {
   constructor(props) {
@@ -27,18 +27,79 @@ export default class Game extends Component {
       gameOver: false,
       chatInput: '',
       command: '',
-      commandArray: [
-        {
-          command: `The game will begin shortly...type 'help' to learn how to play`
-        }
-      ],
-      socket: null,
+      commandArray: [{command: `The game will begin shortly...type 'help' to learn how to play`}],
+      socket: null
     }
 
     this.handleChatInputChange = this.handleChatInputChange.bind(this);
     this.handleChatInputSubmit = this.handleChatInputSubmit.bind(this);
     this.handleCommandChange = this.handleCommandChange.bind(this);
     this.handleCommands = this.handleCommands.bind(this);
+  }
+
+  socketHandlers() {
+    return {
+      handleChat: (message) => {
+      var messageInstance = {
+          name: message.name,
+          text: message.text
+        }
+        this.setState(prevState => {
+          return {
+            messageArray: prevState.messageArray.concat(messageInstance)
+          }
+        })
+      },
+      playerInitialized: (data) => {
+        this.setState({
+          [data.player]: true,
+          pokemon: data.pokemon
+        });
+      },
+      handleReady: (data) => {
+        if (this.state.player1) {
+          this.setState({
+            isActive: true,
+            opponent: data.player2
+          });
+        } else {
+          this.setState({
+            isActive: false,
+            opponent: data.player1
+          });
+        }
+        this.setState({
+          commandArray: [{command: 'Let the battle begin!'}]
+        });
+      },
+      attackProcess: (data) => {
+        this.setState(prevState => {
+          return {
+            commandArray: prevState.commandArray.concat(data.basicAttackDialog)
+          }
+        });
+      },
+      turnMove: (data) => {
+        if (this.state.player1) {
+          this.setState(prevState => {
+            return {
+              pokemon: data.player1.pokemon,
+              opponent: data.player2,
+              isActive: !prevState.isActive
+            }
+          });
+        } else {
+          this.setState(prevState => {
+            return {
+            pokemon: data.player2.pokemon,
+            opponent: data.player1,
+            isActive: !prevState.isActive
+            }
+          })
+        }
+      },
+
+    }
   }
 
   componentDidMount() {
@@ -52,7 +113,7 @@ export default class Game extends Component {
       return text;
     }
 
-    // it's just a little more readable during testing
+  // it's just a little more readable during testing
     function makeHumanId() {
       var text = "";
       var names = ['chris-', 'david-', 'james-', 'thomas-', 'anthony-', 'fred-']
@@ -70,96 +131,19 @@ export default class Game extends Component {
       name,
       socket
     })
-    const playerInitializer = {
+    const playerInit = {
       gameid: this.props.match.params.gameid,
       name,
       pokemon: this.state.pokemon
     }
-    socket.emit('join game', playerInitializer);
-    socket.on('gamefull', (message) => {
-      console.log(message);
-      // alert(message);
-    })
-    socket.on('chat message', (message) => {
-      var messageInstance = {
-        name: message.name,
-        text: message.text
-      }
-      this.setState(prevState => {
-        return {
-          messageArray: prevState.messageArray.concat(messageInstance)
-        }
-      })
-    });
-    socket.on('player', (data) => {
-      console.log(data);
-      this.setState({
-        [data.player]: true,
-        pokemon: data.pokemon
-      })
-    });
-    socket.on('ready', (data) => {
-      if (this.state.player1) {
-        this.setState({
-          isActive: true,
-          opponent: data.player2
-        })
-      } else {
-        this.setState({
-          isActive: false,
-          opponent: data.player1
-        })
-      }
-      this.setState({
-        commandArray: [{command: 'Let the battle begin!'}]
-      })
-    });
-    socket.on('attack processed', (data) => {
-      this.setState(prevState => {
-        return {
-          commandArray: prevState.commandArray.concat(data.basicAttackDialog)
-        }
-      });
-    })
-    socket.on('swap move', (data) => {
-      if (this.state.player1) {
-        this.setState(prevState => {
-          return {
-            pokemon: data.player1.pokemon,
-            opponent: data.player2,
-          }
-        });
-      } else {
-        this.setState(prevState => {
-          return {
-          pokemon: data.player2.pokemon,
-          opponent: data.player1,
-          }
-        })
-      }
-    });
-    socket.on('turn move', (data) => {
-      if (this.state.player1) {
-        this.setState(prevState => {
-          return {
-            pokemon: data.player1.pokemon,
-            opponent: data.player2,
-            isActive: !prevState.isActive
-          }
-        });
-      } else {
-        this.setState(prevState => {
-          return {
-          pokemon: data.player2.pokemon,
-          opponent: data.player1,
-          isActive: !prevState.isActive
-          }
-        })
-      }
-    });
-    socket.on('gameover', (data) => {
-      alert(data.name + ' wins!!');
-    })
+    socket.emit('join game', playerInit);
+    socket.on('gamefull', message => alert(message)); 
+    socket.on('chat message', this.socketHandlers().handleChat); 
+    socket.on('player', this.socketHandlers().playerInitialized); 
+    socket.on('ready', this.socketHandlers().handleReady); 
+    socket.on('attack processed', this.socketHandlers().attackProcess); 
+    socket.on('turn move', this.socketHandlers().turnMove);
+    socket.on('gameover', data => alert(data.name + ' wins!!')); 
   }
 
   handleChatInputChange(e) {
@@ -278,3 +262,4 @@ export default class Game extends Component {
     )
   }
 }
+
