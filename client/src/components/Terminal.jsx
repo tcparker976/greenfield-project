@@ -67,7 +67,7 @@ export default class Terminal extends Component {
             )
           })}
         </div>
-        <TextareaAutosize className={css.commandInput} value={this.props.commandInput} onKeyDown={this.props.handleCommands} onChange={this.props.handleCommandChange} />
+        <TextareaAutosize className={css.commandInput} value={this.props.commandInput} onKeyDown={this.props.handleCommands} onChange={(e) => this.props.handleInputChange(e, 'commandInput')} />
       </div>
     )
   }

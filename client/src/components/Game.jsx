@@ -6,6 +6,7 @@ import Login from './Login.jsx';
 import Chat from './Chat.jsx';
 import Terminal from './Terminal.jsx';
 import GameView from './GameView.jsx';
+import GameOverView from './GameOverView.jsx';
 import GameState from './GameState.jsx';
 import Logo from './Logo.jsx';
 import css from '../styles.css';
@@ -25,15 +26,15 @@ export default class Game extends Component {
       opponent: null,
       isActive: null,
       gameOver: false,
+      winner: null,
       chatInput: '',
-      command: '',
-      commandArray: [{command: `The game will begin shortly...type 'help' to learn how to play`}],
+      commandInput: '',
+      commandArray: [{command: `The game will begin shortly - type 'help' to learn how to play`}],
       socket: null
     }
 
-    this.handleChatInputChange = this.handleChatInputChange.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
     this.handleChatInputSubmit = this.handleChatInputSubmit.bind(this);
-    this.handleCommandChange = this.handleCommandChange.bind(this);
     this.handleCommands = this.handleCommands.bind(this);
   }
 
@@ -98,15 +99,20 @@ export default class Game extends Component {
           })
         }
       },
-
+      gameOver: (data) => {
+        this.setState({
+          winner: data.name,
+          gameOver: true,
+          isActive: false
+        }); 
+        setTimeout(() => this.props.history.replace("/"), 20000); 
+      }
     }
   }
 
   componentDidMount() {
     axios('/user')
       .then(({ data }) => {
-        console.log("USERITO USERITO USERITO")
-        console.log(data)
         if (data.username) {
           const username = data.username;
           var socket = io();
@@ -126,7 +132,7 @@ export default class Game extends Component {
           socket.on('ready', this.socketHandlers().handleReady); 
           socket.on('attack processed', this.socketHandlers().attackProcess); 
           socket.on('turn move', this.socketHandlers().turnMove);
-          socket.on('gameover', data => alert(data.name + ' wins!!')); 
+          socket.on('gameover', this.socketHandlers().gameOver); 
         }
         else {
           this.props.history.replace("/login");
@@ -134,11 +140,11 @@ export default class Game extends Component {
       })
   }
 
-  handleChatInputChange(e) {
+  handleInputChange(e, type) {
     // this if statement prevents the chat text area from expanding on submit (keyCode 13)
     if (e.target.value !== '\n') {
       this.setState({
-        chatInput: e.target.value
+        [type]: e.target.value
       });
     }
   }
@@ -146,80 +152,103 @@ export default class Game extends Component {
   handleChatInputSubmit(e) {
     if (e.keyCode === 13) {
       var socket = io();
-      this.state.socket.emit('chat message', {gameid: this.props.match.params.gameid, name: this.state.name, text: e.target.value});
+      this.state.socket.emit('chat message', {
+        gameid: this.props.match.params.gameid, 
+        name: this.state.name, 
+        text: e.target.value
+      });
       this.setState({
         chatInput: ''
       });
     }
   }
 
-  handleCommandChange(e) {
-    // this if statement prevents the chat text area from expanding on submit (keyCode 13)
-    if (e.target.value !== '\n') {
-      this.setState({
-        command: e.target.value
-      });
-    }
-  }
-
-  handleCommands(e) {
-    if (e.keyCode === 13) {
-      if (e.target.value === 'help') {
+  commandHandlers() {
+    return {
+      help: () => {
         this.setState(prevState => {
           return {
             commandArray: prevState.commandArray.concat(help),
-            command: ''
+            commandInput: ''
+          }
+        })
+      },
+      attack: () => {
+        this.state.socket.emit('attack', {
+          gameid: this.props.match.params.gameid,
+          name: this.state.name,
+          pokemon: this.state.pokemon
+        });
+      },
+      choose: (pokemonToSwap) => {
+        let isAvailable = false;
+        let index;
+        let health;
+        this.state.pokemon.forEach((poke, i) => {
+          if (poke.name === pokemonToSwap) {
+            isAvailable = true;
+            index = i;
+            health = poke.health 
           }
         });
-      } else {
-        if (!this.state.isActive) {
-          alert('it is not your turn!')
-        } else {
-        if (e.target.value === 'attack') {
-          this.state.socket.emit('attack', {
+        if (isAvailable && health > 0) {
+          this.state.socket.emit('switch', {
             gameid: this.props.match.params.gameid,
-            name: this.state.name,
-            pokemon: this.state.pokemon
-          });
-        } else if (e.target.value.split(' ')[0].toLowerCase() === "choose") {
-          let swap = e.target.value.split(' ')[1];
-          let isAvailable = false;
-          let index;
-          this.state.pokemon.forEach((poke, i) => {
-            if (poke.name === swap) {
-              isAvailable = true;
-              index = i;
-            }
-          });
-          if (isAvailable) {
-            this.state.socket.emit('switch', {
-              gameid: this.props.match.params.gameid,
-              pokemon: this.state.pokemon,
-              index
-            })
-          } else {
-            alert('you dont have that pokemon!');
-          }
+            pokemon: this.state.pokemon,
+            index
+          })
+        } else if (health === 0) {
+          alert('That pokemon has fainted!')
         } else {
-          alert('invalid input!')
-        }
-          this.setState({
-            command: ''
-          });
+          alert('You do not have that pokemon!');
         }
       }
     }
   }
 
+
+
+  handleCommands(e) {
+    if (e.keyCode !== 13) return;
+    let value = e.target.value.toLowerCase(); 
+
+    if (value === 'help') {
+      return this.commandHandlers().help(); 
+    } 
+    
+    if (!this.state.isActive) {
+      alert('it is not your turn!');
+    } else {
+      if (value === 'attack') {
+        if (this.state.pokemon[0].health <= 0) {
+          alert('you must choose a new pokemon, this one has fainted!');
+        } else {
+          this.commandHandlers().attack(); 
+        }
+      } else if (value.split(' ')[0] === "choose") {
+        this.commandHandlers().choose(value.split(' ')[1]); 
+      } else {
+        alert('invalid input!')
+      }
+    }
+
+    this.setState({
+      commandInput: ''
+    });
+  
+  }
+
   renderGame() {
+    const { pokemon, opponent, winner, name } = this.state;
     if (!this.state.opponent) {
       return (
         <div className={css.loading}>
           <h1>Awaiting opponent...</h1>
         </div>
       )
+    } else if (this.state.gameOver) {
+      return <GameOverView pokemon={winner === name ? pokemon : opponent.pokemon} winner={winner} />
     } else {
-      const { pokemon, opponent } = this.state;
       return <GameView opponent={opponent} pokemon={pokemon} />
     }
   }
@@ -229,7 +258,7 @@ export default class Game extends Component {
       <div className={css.stateContainer}>
         <Logo name={this.state.name} isActive={this.state.isActive} opponent={this.state.opponent} />
         <GameState pokemon={this.state.pokemon} />
-        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleChatInputChange={this.handleChatInputChange} /> 
+        <Chat messageArray={this.state.messageArray} chatInput={this.state.chatInput} handleChatInputSubmit={this.handleChatInputSubmit} handleInputChange={this.handleInputChange} /> 
       </div>
     );
   }
@@ -237,13 +266,11 @@ export default class Game extends Component {
 
   render() {
     const { players, spectators, gameOver, pokemon } = this.state;
-    console.log(this.state.pokemon);
-    console.log(this.state.opponent);
     return (
       <div className={css.gamePageContainer}>
         <div className={css.gameContainer}>
           {this.renderGame()}
-          <Terminal commandArray={this.state.commandArray} commandInput={this.state.command} handleCommands={this.handleCommands} handleCommandChange={this.handleCommandChange} />
+          <Terminal commandArray={this.state.commandArray} commandInput={this.state.commandInput} handleCommands={this.handleCommands} handleInputChange={this.handleInputChange} />
         </div>
         {this.renderSideBar()}
       </div>
