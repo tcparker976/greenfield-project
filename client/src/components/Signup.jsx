@@ -84,10 +84,10 @@ export default class Signup extends Component {
       alert('Username should only conatain latin letters and/or numbers, and be from 8 to 20 characters long');
       return;
     }
-    // else if (!password.match(validator.password)) {
-    //   alert('Password should contain at least one letter, number and special character, and be from 8 to 32 characters long');
-    //   return;
-    // }
+    else if (!password.match(validator.password)) {
+      alert('Password should contain at least one letter, number and special character, and be from 8 to 32 characters long');
+      return;
+    }
     else if (!email.match(validator.email)) {
       alert('Incorrect email format');
       return;
