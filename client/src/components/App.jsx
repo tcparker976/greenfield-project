@@ -8,6 +8,8 @@ import Signup from './Signup.jsx';
 import Welcome from './Welcome.jsx'
 import io from 'socket.io-client';
 
+const loggedIn = false;
+
 const App = () => {
   return (
     <div>

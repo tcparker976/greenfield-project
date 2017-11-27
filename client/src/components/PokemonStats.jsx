@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import css from '../styles.css';
 
 const PokemonStats = (props) => {
-  console.log(props);
   return (
     <div className={css.stats}>
       <h2>{props.stats.name.toUpperCase()}</h2>
