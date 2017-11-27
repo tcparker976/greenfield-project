@@ -52,7 +52,7 @@ export default class Login extends Component {
           this.setState({
             usernameError: true
           });
-        } 
+        }
         else if (resp.data.match('Passwords Do Not Match')) {
           console.log('Passwords Do Not Match');
           this.setState({
@@ -76,7 +76,7 @@ export default class Login extends Component {
     }
     else if (this.state.registered === true) {
       return (
-        <Redirect to="/home"/>
+        <Redirect to="/welcome"/>
       )
     }
     else {

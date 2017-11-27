@@ -8,6 +8,7 @@
 import React, { Component } from 'react';
 import { Link, Route, Redirect } from 'react-router-dom';
 import css from '../styles.css';
+import axios from 'axios';
 
 export default class Welcome extends Component {
   constructor(props) {
@@ -15,9 +16,11 @@ export default class Welcome extends Component {
     this.state = {
       newGameId: '',
       roomInput: '',
+      name: 'PokéMaster'
     }
     this.handleRoomInputReturn = this.handleRoomInputReturn.bind(this);
     this.handleRoomInputChange = this.handleRoomInputChange.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
 
   componentDidMount() {
@@ -32,7 +35,19 @@ export default class Welcome extends Component {
 
     this.setState({
       newGameId: makeGameId()
-    })
+    });
+
+    axios('/user')
+    .then(({ data }) => {
+      if (data.username) {
+        const username = data.username;
+        this.setState({
+          name: username
+        });
+      } else {
+        this.props.history.replace("/login");
+      }
+    });
   }
 
   handleRoomInputReturn(e) {
@@ -48,6 +63,11 @@ export default class Welcome extends Component {
     });
   }
 
+  handleLogout() {
+    console.log('handle logout');
+    axios('/logout');
+  }
+
   render() {
     let joinGameButton = null
     if (this.state.roomInput.length) {
@@ -61,13 +81,12 @@ export default class Welcome extends Component {
         <div className={css.navBar}>
           <div className={css.logo}>Chattermon</div>
           <div className={css.navBarLinksContainer}>
-            <div className={css.navBarLink}><Link to={'/'} className={css.navBarLinkA}>Sample Link</Link></div>
-            <div className={css.navBarLink}><Link to={'/'} className={css.navBarLinkA}>Logout</Link></div>
+            <div className={css.navBarLink} onClick={this.handleLogout}><Link to={'/login'} className={css.navBarLinkA}>Logout</Link></div>
           </div>
         </div>
         <div className={css.contentSuperWrapper}>
           <div className={css.welcomeControlPannel}>
-            <div className={css.welcomeMessage}>Welcome back James!</div>
+            <div className={css.welcomeMessage}>Welcome back {this.state.name}</div>
             <div className={css.controlsContainer}>
               <Link to={'game/' + this.state.newGameId} className={css.gameButtonLink}><button className={css.gameButton}>New Game</button></Link>
               <div className={css.seperator}></div>

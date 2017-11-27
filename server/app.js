@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);  
+const io = require('socket.io')(http);
 const db = require('../database/db.js');
 const bodyParser = require('body-parser');
 const PokeApi = require('pokeapi');
@@ -48,7 +48,7 @@ if (process.env.NODE_ENV !== 'production') {
 const games = {};
 
 const createPokemon = (pokemon) => {
-  const { name, baseHealth, baseAttack, baseDefense, frontSprite, backSprite, types } = pokemon; 
+  const { name, baseHealth, baseAttack, baseDefense, frontSprite, backSprite, types } = pokemon;
   return {
     name,
     health: baseHealth,
@@ -74,7 +74,7 @@ const createPlayer = (player, number) => {
       console.log(results);
       let pokemon = []
       results.forEach(result => {
-        pokemon.push(createPokemon(result)); 
+        pokemon.push(createPokemon(result));
       });
       resolve({
         player: number,
@@ -82,7 +82,7 @@ const createPlayer = (player, number) => {
         pokemon
       })
     })
-    .catch(err => reject(err));  
+    .catch(err => reject(err));
   })
 }
 
@@ -96,7 +96,7 @@ const createTurnlog = (game, turn, type) => {
     return turnlog;
   } else if (type === 'switch') {
     let turnlog = [{command: `${game[player].pokemon[0].name} appears!`}];
-    return turnlog; 
+    return turnlog;
   }
 }
 
@@ -119,8 +119,8 @@ io.on('connection', (socket) => {
       } else if (data.gameid in games && !games[data.gameid].player2) {
         createPlayer(data, 'player2')
         .then(player2 => {
-          games[data.gameid].player2 = player2; 
-          console.log('finished creating player 2');          
+          games[data.gameid].player2 = player2;
+          console.log('finished creating player 2');
           io.to(socket.id).emit('player', player2);
           io.to(data.gameid).emit('ready', games[data.gameid]);
         })
@@ -141,7 +141,7 @@ io.on('connection', (socket) => {
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1'
     const turnResults = damageCalculation(game[player], game[opponent]);
     game[opponent].pokemon[0].health -= turnResults.damageToBeDone;
-    const turnlog = createTurnlog(game, turnResults, 'attack');  
+    const turnlog = createTurnlog(game, turnResults, 'attack');
     io.to(data.gameid).emit('attack processed', {
       basicAttackDialog: turnlog
     })
@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
     const game = games[data.gameid];
     const player = game.playerTurn;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1';
-    game[player].pokemon.unshift(game[player].pokemon.splice(data.index, 1)[0]); 
+    game[player].pokemon.unshift(game[player].pokemon.splice(data.index, 1)[0]);
     const turnlog = createTurnlog(game, null, 'switch');
     game.playerTurn = opponent;
     io.to(data.gameid).emit('attack processed', {
@@ -173,7 +173,7 @@ app.post('/login', (req, resp) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  
+
   console.log('username', username);
   console.log('password', password);
   db.Users
@@ -199,11 +199,11 @@ app.post('/login', (req, resp) => {
     if (!passwordsMatch) {
       resp.writeHead(201, {'Content-Type': 'text/plain'});
       resp.end('Passwords Do Not Match');
-    } 
+    }
     else {
       req.session.username = username;
       req.session.loggedIn = true;
-      resp.redirect('/');
+      resp.redirect('/welcome');
     }
   })
 })
@@ -216,7 +216,7 @@ app.post('/signup', (req, resp) => {
   bcrypt.hash(password, saltRounds)
     .then(hash => db.saveUser(username, hash, email))
     .then(newuser => {
-      console.log(newuser); 
+      console.log(newuser);
       if (newuser.dataValues) {
         req.login({ user_id: newuser.id }, err => {
             if (err) throw err;
